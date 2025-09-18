@@ -1,0 +1,43 @@
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.*.local
+
+# Build output
+dist/
+build/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE/editor specific files
+.vscode/
+.idea/
+*.swp
+
+# Optional cache directories
+.cache/
+.nyc_output/
+coverage/
+
+# PM2 logs & data
+.pm2/
+
+# Temporary files
+tmp/
+temp/
+
+.env
+.env copy
+cloneenv.txt
