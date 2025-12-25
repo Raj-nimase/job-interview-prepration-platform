@@ -161,7 +161,7 @@ Format the output strictly as valid JSON only:
 
   // Get AI feedback
   const completion = await openai.chat.completions.create({
-    model: "deepseek/deepseek-r1:free",
+    model: "deepseek/deepseek-r1",
     messages: [{ role: "user", content: prompt }],
     temperature: 0.7,
   });
@@ -245,7 +245,7 @@ Return only the question text — no numbering, no extra explanation.
     `;
 
     const completion = await openai.chat.completions.create({
-      model: "deepseek/deepseek-r1:free",
+      model: "deepseek/deepseek-r1",
       messages: [{ role: "user", content: prompt }],
       temperature: 0.8,
     });
