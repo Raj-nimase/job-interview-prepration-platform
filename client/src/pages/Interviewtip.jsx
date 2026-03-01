@@ -42,13 +42,13 @@ const tips = [
 
 const InterviewTips = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] text-white p-6">
+    <div className="min-h-screen bg-background text-foreground pt-24 p-4 sm:p-6">
       <div className="max-w-5xl mx-auto">
         <motion.h1
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-4xl font-bold text-center mb-10 text-cyan-300"
+          className="text-3xl sm:text-4xl font-bold text-center mb-8 sm:mb-10 text-emerald-500"
         >
           💼 Interview Tips for Success
         </motion.h1>
@@ -61,19 +61,19 @@ const InterviewTips = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }} // Removed index delay for smooth movement
-              className="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-xl shadow hover:border-cyan-400 hover:shadow-cyan-500/30 transition-all duration-100"
+              className="bg-card border border-border p-6 rounded-2xl shadow-lg shadow-black/5 dark:shadow-black/20 hover:border-emerald-500/30 hover:shadow-xl transition-all duration-300"
             >
               <div className="flex items-center gap-4 mb-2">
-                <div className="bg-white/10 p-2 rounded-full">{tip.icon}</div>
-                <h2 className="text-xl font-semibold text-white">{tip.title}</h2>
+                <div className="bg-muted/50 p-2 rounded-xl">{tip.icon}</div>
+                <h2 className="text-lg sm:text-xl font-semibold text-foreground">{tip.title}</h2>
               </div>
-              <p className="text-gray-300 text-sm">{tip.content}</p>
+              <p className="text-muted-foreground text-sm leading-relaxed">{tip.content}</p>
             </motion.div>
           ))}
         </div>
 
         {/* Footer Tip */}
-        <div className="mt-12 text-center text-sm text-gray-400">
+        <div className="mt-12 text-center text-sm text-muted-foreground">
           Remember: Interviews are a two-way street. Be honest, stay calm, and let your skills shine!
         </div>
       </div>

@@ -76,7 +76,7 @@ export function ResumeForm({ resumeData, setResumeData }) {
     setResumeData((prev) => ({ ...prev, [section]: list }));
   };
 
-  const nameParts = resumeData.personal.name.split(' ');
+  const nameParts = (resumeData?.personal?.name || '').split(' ');
   const givenName = nameParts[0] || '';
   const familyName = nameParts.slice(1).join(' ') || '';
 

@@ -8,40 +8,16 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Trash2, PlusCircle, User, Briefcase, GraduationCap, Star, Award, Upload, Languages, Users, Camera, Linkedin, MoreVertical, ChevronUp, ChevronDown } from 'lucide-react';
+import { Trash2, PlusCircle, Briefcase, GraduationCap, Star, Award, Languages, Users, Camera, MoreVertical, ChevronUp } from 'lucide-react';
 import React from 'react';
 import { Separator } from '@/components/ui/separator.jsx';
+import { initialResumeData } from '@/lib/initial-data';
 
-export function ResumeForm({ resumeData, setResumeData }) {
+export function ResumeForm({ resumeData: propsResumeData, setResumeData: propsSetResumeData }) {
   const fileInputRef = React.useRef(null);
-  const [history, setHistory] = useState([]);
-const [future, setFuture] = useState([]);
-const [resumeData, setResumeData] = useState(initialData);
-
-// Save new state to history
-const updateResume = (newData) => {
-  setHistory([...history, resumeData]);
-  setFuture([]);
-  setResumeData(newData);
-};
-
-// Undo
-const handleUndo = () => {
-  if (history.length === 0) return;
-  const prev = history[history.length - 1];
-  setFuture([resumeData, ...future]);
-  setHistory(history.slice(0, -1));
-  setResumeData(prev);
-};
-
-// Redo
-const handleRedo = () => {
-  if (future.length === 0) return;
-  const next = future[0];
-  setHistory([...history, resumeData]);
-  setFuture(future.slice(1));
-  setResumeData(next);
-};
+  const [internalData, setInternalData] = React.useState(initialResumeData);
+  const resumeData = propsResumeData ?? internalData;
+  const setResumeData = propsSetResumeData ?? setInternalData;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -104,9 +80,11 @@ const handleRedo = () => {
     setResumeData((prev) => ({ ...prev, [section]: list }));
   };
 
-  const nameParts = resumeData.personal.name.split(' ');
+  const nameParts = (resumeData?.personal?.name || '').split(' ');
   const givenName = nameParts[0] || '';
   const familyName = nameParts.slice(1).join(' ') || '';
+
+  if (!resumeData) return null;
 
   return (
     <div className="space-y-8 text-white bg-gradient-to-br from-slate-900 to-slate-800 p-4">

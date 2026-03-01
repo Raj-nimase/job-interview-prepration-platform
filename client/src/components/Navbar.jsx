@@ -1,9 +1,21 @@
 import { motion } from "framer-motion";
 import { useNavigate, Link, NavLink } from "react-router-dom";
-import { Menu, X, Code2, FileText, Mic, BarChart2, User } from "lucide-react";
+import {
+  Menu,
+  X,
+  Code2,
+  FileText,
+  Mic,
+  BarChart2,
+  User,
+  Sun,
+  Moon,
+} from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
+// Removed the commented-out ThemeContext import as we're managing it locally now
 import Swal from "sweetalert2";
+import { toast } from "react-hot-toast";
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -11,6 +23,7 @@ import {
   NavigationMenuTrigger,
   NavigationMenuContent,
 } from "@/components/ui/navigation-menu";
+import { useAuth } from "@/features/auth/hook/useAuth";
 
 const features = [
   {
@@ -45,54 +58,43 @@ const features = [
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  // derive user state from auth context; no local copy
+  const { user, logoutUser } = useAuth();
+  const isLoggedIn = !!user;
+
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
-
-    const handleStorageChange = () => {
-      setIsLoggedIn(!!localStorage.getItem("token"));
-    };
-
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(false);
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("userId");
-
-    Swal.fire({
-      icon: "success",
-      title: "Logged out successfully",
-      timer: 1500,
-    });
-
-    setIsLoggedIn(false);
+  const handleLogout = async () => {
+    await logoutUser();
+    toast.success("Logged out successfully");
     navigate("/login");
   };
 
   return (
-    <header className="w-full bg-black/60 backdrop-blur-md shadow-sm fixed top-0 z-50">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <header className="w-full bg-background/95 backdrop-blur-md border-b border-border shadow-sm fixed top-0 z-50 print:hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center gap-4">
         {/* Logo */}
         <motion.div
           whileHover={{ scale: 1.05 }}
@@ -110,14 +112,18 @@ const Navbar = () => {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center space-x-6">
-          {[{name:"Home",path:'/'}, {name:"About",path:'/about'},{name:"Contact",path:'/contact'}].map((item) => (
+          {[
+            { name: "Home", path: "/" },
+            { name: "About", path: "/about" },
+            { name: "Contact", path: "/contact" },
+          ].map((item) => (
             <NavLink
               key={item.name}
               to={item.path}
               className={({ isActive }) =>
-                `font-medium cursor-pointer ${
-                  isActive ? "text-emerald-400" : "text-white"
-                } hover:text-emerald-400 relative`
+                `font-medium cursor-pointer transition-colors ${
+                  isActive ? "text-emerald-500" : "text-foreground"
+                } hover:text-emerald-500 relative`
               }
             >
               {item.name}
@@ -128,23 +134,25 @@ const Navbar = () => {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="hover:text-emerald-600 font-medium text-lg">
+                <NavigationMenuTrigger className="hover:text-emerald-500 font-medium text-lg text-foreground">
                   Features
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="bg-gradient-to-br from-slate-900 to-slate-800 p-4 shadow-lg rounded-lg">
-                  <ul className="grid gap-3 w-[400px] md:w-[500px] md:grid-cols-2">
+                <NavigationMenuContent className="bg-card border border-border p-4 shadow-xl rounded-xl">
+                  <ul className="grid gap-2 w-[340px] sm:w-[400px] md:w-[500px] md:grid-cols-2">
                     {features.map((feature) => (
                       <li
                         key={feature.title}
                         onClick={() => navigate(feature.link)}
-                        className="flex items-start gap-3 p-3 rounded-md hover:bg-gray-100 transition-all cursor-pointer"
+                        className="flex items-start gap-3 p-3 rounded-lg hover:bg-accent transition-colors cursor-pointer"
                       >
-                        <div className="text-emerald-400">{feature.icon}</div>
+                        <div className="text-emerald-500 shrink-0">
+                          {feature.icon}
+                        </div>
                         <div>
-                          <p className="font-semibold text-white">
+                          <p className="font-semibold text-foreground">
                             {feature.title}
                           </p>
-                          <p className="text-sm text-gray-400">
+                          <p className="text-sm text-muted-foreground">
                             {feature.description}
                           </p>
                         </div>
@@ -158,25 +166,41 @@ const Navbar = () => {
         </nav>
 
         {/* Auth Buttons or Profile */}
-        <div className="hidden md:flex gap-4 items-center">
+        <div className="hidden md:flex gap-3 items-center">
+          <motion.button
+            onClick={toggleTheme}
+            className="p-2 rounded-lg bg-muted hover:bg-accent text-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            aria-label={
+              theme === "dark"
+                ? "Switch to light theme"
+                : "Switch to dark theme"
+            }
+          >
+            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+          </motion.button>
           {!isLoggedIn ? (
-            <Button className="bg-emerald-500 text-white hover:bg-emerald-600">
+            <Button
+              asChild
+              className="bg-emerald-500 text-white hover:bg-emerald-600 focus-visible:ring-emerald-400"
+            >
               <Link to="/login">Login</Link>
             </Button>
           ) : (
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center text-white font-semibold cursor-pointer hover:text-emerald-400 gap-2"
+                className="flex items-center text-foreground font-semibold cursor-pointer hover:text-emerald-500 gap-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg px-2 py-1"
               >
                 <User size={20} />
                 {user?.name || "User"}
               </button>
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-50">
+                <div className="absolute right-0 mt-2 w-40 bg-card border border-border rounded-xl shadow-xl z-50 overflow-hidden">
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
+                    className="block w-full text-left px-4 py-2.5 text-foreground hover:bg-accent transition-colors focus:outline-none focus:bg-accent"
                   >
                     Logout
                   </button>
@@ -187,27 +211,38 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Menu Button */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden text-white"
-        >
-          {isOpen ? <X size={28} /> : <Menu size={28} />}
-        </button>
+        <div className="flex md:hidden items-center gap-2">
+          <motion.button
+            onClick={toggleTheme}
+            className="p-2 rounded-lg text-foreground"
+            whileTap={{ scale: 0.95 }}
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? <Sun size={22} /> : <Moon size={22} />}
+          </motion.button>
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="p-2 text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg"
+          >
+            {isOpen ? <X size={28} /> : <Menu size={28} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Nav */}
       {isOpen && (
         <motion.div
-          initial={{ height: 0 }}
-          animate={{ height: "auto" }}
-          className="md:hidden px-6 pb-4 bg-white border-t"
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: "auto", opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          className="md:hidden overflow-hidden border-t border-border bg-card"
         >
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2 px-6 py-4">
             {["Home", "About", "Contact"].map((item) => (
               <Link
                 key={item}
                 to={`/${item.toLowerCase()}`}
-                className="text-gray-800 font-medium cursor-pointer"
+                className="py-3 font-medium text-foreground hover:text-emerald-500 transition-colors"
                 onClick={() => setIsOpen(false)}
               >
                 {item}
@@ -215,18 +250,24 @@ const Navbar = () => {
             ))}
 
             {!isLoggedIn ? (
-              <>
-                <Button variant="outline">
+              <div className="flex flex-col gap-2 pt-2">
+                <Button variant="outline" asChild>
                   <Link to="/login">Login</Link>
                 </Button>
-                <Button className="bg-emerald-500 text-white hover:bg-emerald-600">
+                <Button
+                  asChild
+                  className="bg-emerald-500 text-white hover:bg-emerald-600"
+                >
                   <Link to="/login">Get Started</Link>
                 </Button>
-              </>
+              </div>
             ) : (
               <button
-                onClick={handleLogout}
-                className="text-red-600 font-semibold"
+                onClick={() => {
+                  handleLogout();
+                  setIsOpen(false);
+                }}
+                className="text-left py-3 text-destructive font-semibold hover:underline"
               >
                 Logout
               </button>

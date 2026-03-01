@@ -30,15 +30,13 @@ export function ResumePreview({ resumeData, templateId = "classic" }) {
 
   const renderClassicTemplate = () => (
     <div
-      className="
-      relative w-[210mm] h-[297mm] bg-white text-white p-12 shadow-2xl font-sans
-      transform origin-top-left scale-[.45] sm:scale-50 md:scale-60 lg:scale-75
-      print:scale-100 print:transform-none
-    "
+      className="relative w-[210mm] h-[297mm] bg-white text-gray-900 p-12 shadow-2xl font-sans
+      transform origin-top-left scale-[.5] sm:scale-55 md:scale-65 lg:scale-80 xl:scale-90
+      print:scale-100 print:origin-center print:transform-none print:shadow-none"
     >
       <div className="flex flex-col h-full">
         <header className="text-center mb-10">
-          <h1 className="text-4xl font-bold tracking-tight text-white uppercase">
+          <h1 className="text-4xl font-bold tracking-tight text-gray-900 uppercase">
             {personal.name || "Olivia Wilson"}
           </h1>
           <h2 className="text-lg font-medium text-gray-500 tracking-widest mt-1">
@@ -49,7 +47,7 @@ export function ResumePreview({ resumeData, templateId = "classic" }) {
         <div className="grid grid-cols-3 gap-10">
           <div className="col-span-1 space-y-8">
             <section>
-              <h3 className="text-sm text-white font-bold uppercase tracking-wider border-b-2 border-gray-300 pb-2 mb-3">
+              <h3 className="text-sm text-gray-900 font-bold uppercase tracking-wider border-b-2 border-gray-300 pb-2 mb-3">
                 Contact
               </h3>
               <div className="space-y-2 text-xs">
@@ -148,7 +146,7 @@ export function ResumePreview({ resumeData, templateId = "classic" }) {
   const renderSimpleTemplate = () => (
     <div
       className="relative w-[210mm] h-[297mm] bg-white p-12 shadow-2xl 
-    transform origin-top-left scale-[.45] sm:scale-50 md:scale-60 lg:scale-75 font-sans
+    transform origin-top-left scale-[.5] sm:scale-55 md:scale-65 lg:scale-80 xl:scale-90 font-sans
     print:scale-100 print:origin-center print:transform-none 
     print:w-[210mm] print:h-[297mm] print:shadow-none print:text-black"
     >
@@ -280,7 +278,7 @@ export function ResumePreview({ resumeData, templateId = "classic" }) {
 
   const renderModernTemplate = () => (
     <div className="relative w-[210mm] h-[297mm] bg-[#fdfaf5] text-gray-700 shadow-2xl flex 
-    transform origin-top-left scale-[.45] sm:scale-50 md:scale-60 lg:scale-75 font-sans
+    transform origin-top-left scale-[.5] sm:scale-55 md:scale-65 lg:scale-80 xl:scale-90 font-sans
     print:scale-100 print:origin-center print:transform-none 
     print:w-[210mm] print:h-[297mm] print:shadow-none">
 
@@ -442,7 +440,7 @@ export function ResumePreview({ resumeData, templateId = "classic" }) {
 
   const renderExecutiveTemplate = () => (
     <div className="relative w-[210mm] h-[297mm] bg-white text-gray-800 shadow-2xl flex 
-    transform origin-top-left scale-[.45] sm:scale-50 md:scale-60 lg:scale-75 font-sans
+    transform origin-top-left scale-[.5] sm:scale-55 md:scale-65 lg:scale-80 xl:scale-90 font-sans
     print:scale-100 print:origin-center print:transform-none 
     print:w-[210mm] print:h-[297mm] print:shadow-none">
 
@@ -620,12 +618,12 @@ export function ResumePreview({ resumeData, templateId = "classic" }) {
   );
 
   const renderMinimalistTemplate = () => (
-    <div className="relative w-[210mm] h-[297mm] bg-white text-[#333] shadow-2xl flex 
-    transform origin-top-left scale-[.45] sm:scale-50 md:scale-60 lg:scale-75 font-sans
-    print:scale-100 print:origin-center print:transform-none 
-    print:w-[210mm] print:h-[297mm] print:shadow-none">
+    <div className="relative w-[210mm] h-[297mm] bg-white text-[#333] shadow-2xl flex overflow-hidden
+    transform origin-top-left scale-[.5] sm:scale-55 md:scale-65 lg:scale-80 xl:scale-90 font-sans
+    print:scale-100 print:origin-top-left print:transform-none print:overflow-visible
+    print:w-[210mm] print:h-[297mm] print:min-h-[297mm] print:shadow-none">
 
-      <aside className="w-[35%] bg-[#e8e5e1] p-8 flex flex-col">
+      <aside className="w-[35%] min-w-0 shrink-0 bg-[#e8e5e1] p-8 flex flex-col print:justify-between">
         <div className="mt-8">
           <img
             src={personal.photoUrl || "https://placehold.co/220x220.png"}
@@ -659,7 +657,7 @@ export function ResumePreview({ resumeData, templateId = "classic" }) {
           )}
         </div>
 
-        <div className="mt-10 space-y-8 text-sm">
+        <div className="mt-10 space-y-6 print:space-y-4 text-sm print:flex-1">
           {education.length > 0 && (
             <section>
               <h2 className="text-lg font-bold uppercase text-[#333] pb-2 relative">
@@ -710,69 +708,71 @@ export function ResumePreview({ resumeData, templateId = "classic" }) {
         </div>
       </aside>
 
-      <main className="w-[65%] p-10">
-        <header className="mb-8">
-          <h1 className="text-5xl font-extrabold tracking-tight text-[#222] uppercase">
-            {personal.name || "Olivia Wilson"}
-          </h1>
-          <h2 className="text-2xl font-light text-gray-500 tracking-wider mt-2">
-            {personal.title || "Graphics Designer"}
-          </h2>
-        </header>
+      <main className="w-[65%] min-w-0 flex-1 p-10 overflow-hidden flex flex-col print:justify-between">
+        <div>
+          <header className="mb-6 print:mb-4">
+            <h1 className="text-5xl font-extrabold tracking-tight text-[#222] uppercase print:text-4xl">
+              {personal.name || "Olivia Wilson"}
+            </h1>
+            <h2 className="text-2xl font-light text-gray-500 tracking-wider mt-2 print:text-xl">
+              {personal.title || "Graphics Designer"}
+            </h2>
+          </header>
 
-        <section className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <UserSquare className="w-6 h-6 text-gray-600" />
-            <h2 className="text-2xl font-bold text-[#333]">Profile</h2>
-          </div>
-          <p className="text-sm leading-relaxed text-[#555]">
-            {personal.summary}
-          </p>
-        </section>
+          <section className="mb-6 print:mb-4">
+            <div className="flex items-center gap-3 mb-3 print:mb-2">
+              <UserSquare className="w-6 h-6 text-gray-600 shrink-0" />
+              <h2 className="text-2xl font-bold text-[#333] print:text-xl">Profile</h2>
+            </div>
+            <p className="text-sm leading-relaxed text-[#555] print:text-xs print:leading-snug">
+              {personal.summary}
+            </p>
+          </section>
 
-        <section className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <Briefcase className="w-6 h-6 text-gray-600" />
-            <h2 className="text-2xl font-bold text-[#333]">Work Experience</h2>
-          </div>
-          <div className="space-y-6">
-            {experience.map((exp, index) => (
-              <div key={index} className="flex gap-4">
-                <div className="text-center w-24 text-xs text-gray-500">
-                  <p>{exp.startDate}</p>
-                  <p>-</p>
-                  <p>{exp.endDate}</p>
+          <section className="mb-6 print:mb-4">
+            <div className="flex items-center gap-3 mb-3 print:mb-2">
+              <Briefcase className="w-6 h-6 text-gray-600 shrink-0" />
+              <h2 className="text-2xl font-bold text-[#333] print:text-xl">Work Experience</h2>
+            </div>
+            <div className="space-y-4 print:space-y-3">
+              {experience.map((exp, index) => (
+                <div key={index} className="flex gap-4">
+                  <div className="text-center w-24 shrink-0 text-xs text-gray-500">
+                    <p>{exp.startDate}</p>
+                    <p>-</p>
+                    <p>{exp.endDate}</p>
+                  </div>
+                  <div className="border-l-2 border-gray-300 pl-4 min-w-0 flex-1">
+                    <h3 className="font-bold text-base text-[#333]">
+                      {exp.company}
+                    </h3>
+                    <p className="font-semibold text-sm text-gray-600 mb-1">
+                      {exp.title}
+                    </p>
+                    <ul className="list-disc list-outside pl-4 ml-1 text-xs space-y-1 text-gray-600">
+                      {exp.description
+                        .split("\n")
+                        .filter((line) => line.trim() !== "")
+                        .map((line, i) => (
+                          <li key={i} className="break-words">{line.replace("- ", "")}</li>
+                        ))}
+                    </ul>
+                  </div>
                 </div>
-                <div className="border-l-2 border-gray-300 pl-4 flex-1">
-                  <h3 className="font-bold text-base text-[#333]">
-                    {exp.company}
-                  </h3>
-                  <p className="font-semibold text-sm text-gray-600 mb-1">
-                    {exp.title}
-                  </p>
-                  <ul className="list-disc list-inside text-xs space-y-1 text-gray-600">
-                    {exp.description
-                      .split("\n")
-                      .filter((line) => line.trim() !== "")
-                      .map((line, i) => (
-                        <li key={i}>{line.replace("- ", "")}</li>
-                      ))}
-                  </ul>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+              ))}
+            </div>
+          </section>
+        </div>
 
         {references.length > 0 && (
-          <section>
-            <div className="flex items-center gap-3 mb-4">
-              <Users className="w-6 h-6 text-gray-600" />
-              <h2 className="text-2xl font-bold text-[#333]">References</h2>
+          <section className="print:mt-auto">
+            <div className="flex items-center gap-3 mb-3 print:mb-2">
+              <Users className="w-6 h-6 text-gray-600 shrink-0" />
+              <h2 className="text-2xl font-bold text-[#333] print:text-xl">References</h2>
             </div>
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between gap-4 text-sm">
               {references.map((ref, index) => (
-                <div key={index} className="w-[48%]">
+                <div key={index} className="flex-1 min-w-0">
                   <h3 className="font-bold">{ref.name}</h3>
                   <p className="text-xs text-gray-600">{ref.title}</p>
                   <p className="text-xs text-gray-600">Phone: {ref.phone}</p>
@@ -788,7 +788,7 @@ export function ResumePreview({ resumeData, templateId = "classic" }) {
 
   const renderCreativeTemplate = () => (
    <div className="relative w-[210mm] h-[297mm] bg-white text-gray-700 shadow-2xl flex
-    transform origin-top-left scale-[.45] sm:scale-50 md:scale-60 lg:scale-75 font-sans
+    transform origin-top-left scale-[.5] sm:scale-55 md:scale-65 lg:scale-80 xl:scale-90 font-sans
     print:scale-100 print:origin-center print:transform-none 
     print:w-[210mm] print:h-[297mm] print:shadow-none">
 
@@ -921,5 +921,5 @@ export function ResumePreview({ resumeData, templateId = "classic" }) {
     }
   };
 
-  return <div id="resume-preview">{renderTemplate()}</div>;
+  return <div className="resume-preview print-fit">{renderTemplate()}</div>;
 }

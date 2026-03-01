@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import Swal from "sweetalert2";
+import { toast } from "react-hot-toast";
 import { Eye, EyeOff } from "lucide-react";
-import axios from "axios";
+
+import { useAuth } from "../hook/useAuth";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 import { useForm } from "react-hook-form";
 
 const Login = () => {
@@ -11,79 +11,70 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  const { loginUser, registerUser, loading } = useAuth();
 
   // separate forms
   const signupForm = useForm();
   const loginForm = useForm();
 
   const onSubmit = async (data, isSignup) => {
-    const url = isSignup
-      ? "http://localhost:4000/api/auth/register"
-      : "http://localhost:4000/api/auth/login";
+    const payload = {
+      name: isSignup ? data.name : undefined,
+      email: data.email,
+      password: data.password,
+    };
 
-    try {
-      const res = await axios.post(url, {
-        name: isSignup ? data.name : undefined,
-        email: data.email,
-        password: data.password,
-      });
+    const res = isSignup
+      ? await registerUser(payload)
+      : await loginUser(payload);
 
-      Swal.fire({
-        icon: "success",
-        title: isSignup
-          ? "Registered Successfully!"
-          : "Logged in Successfully!",
-        showConfirmButton: false,
-        timer: 2000,
-      });
-
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-      const decoded = jwtDecode(res.data.token);
-      localStorage.setItem("userId", decoded.id);
-
-      // reset the right form
-      if (isSignup) {
-        signupForm.reset();
-      } else {
-        loginForm.reset();
-      }
-
-      navigate("/dashboard");
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: error.response?.data?.message || "Something went wrong",
-      });
+    const { user } = res;
+    if (!user) {
+      throw new Error("Invalid response: missing user");
     }
+
+    toast.success(
+      isSignup ? "Registration successful" : "Logged in successfully",
+    )
+
+    if (isSignup) signupForm.reset();
+    else loginForm.reset();
+
+    navigate("/dashboard");
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="text-emerald-500 text-lg">Loading...</div>
+      </div>
+    );
+  }
+
   return (
-    <div
-      className="flex items-center mt-16 justify-center min-h-screen bg-gradient-to-br from-[#0f0f0f] to-[#1a1a1a] bg-cover"
-      
-    >
-       <video
+    <div className="relative flex items-center pt-24 sm:pt-28 justify-center min-h-screen bg-background overflow-hidden">
+      <video
         autoPlay
         loop
         muted
         playsInline
-        className="absolute top-16 left-0 w-full min-h-scren object-cover"
+        className="absolute inset-0 w-full h-full object-cover opacity-30 dark:opacity-40"
       >
-        <source src="\public\photo\Login-video.mov"
-          type="video/mp4"
-        />
+        <source src="/photo/Login-video.mov" type="video/mp4" />
       </video>
-      <div className="z-10 perspective-[1000px]">
+      <div
+        className="absolute inset-0 bg-background/60 dark:bg-background/40"
+        aria-hidden="true"
+      />
+      <div className="relative z-10 perspective-[1000px] w-full max-w-[400px] mx-4 sm:mx-6">
         <div
-          className={`relative w-[400px] h-[550px] transition-transform duration-700 transform-style-3d ${
+          className={`relative w-full min-h-[520px] sm:min-h-[550px] transition-transform duration-700 transform-style-3d ${
             flipped ? "rotate-y-180" : ""
           }`}
         >
           {/* Sign Up Card */}
-          <div className="absolute w-full h-full bg-[#1e293b]/60 backdrop-blur-xl rounded-2xl shadow-lg border border-white/10 p-8 backface-hidden">
-            <h2 className="text-3xl font-bold text-center text-emerald-400 mb-4">
+          <div className="absolute w-full h-full bg-card/95 backdrop-blur-xl rounded-2xl shadow-xl border border-border p-6 sm:p-8 backface-hidden">
+            <h2 className="text-2xl sm:text-3xl font-bold text-center text-emerald-500 mb-4 ">
               Create Account
             </h2>
             <form
@@ -100,10 +91,10 @@ const Login = () => {
                     message: "Name must be at least 2 characters",
                   },
                 })}
-                className={`w-full px-4 py-2 bg-transparent border rounded text-white placeholder:text-gray-400 focus:outline-none ${
+                className={`w-full px-4 py-2.5 bg-muted/50 border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                   signupForm.formState.errors.name
-                    ? "border-red-500"
-                    : "border-white/20"
+                    ? "border-destructive"
+                    : "border-border"
                 }`}
               />
               {signupForm.formState.errors.name && (
@@ -122,10 +113,10 @@ const Login = () => {
                     message: "Invalid email address",
                   },
                 })}
-                className={`w-full px-4 py-2 bg-transparent border rounded text-white placeholder:text-gray-400 focus:outline-none ${
+                className={`w-full px-4 py-2.5 bg-muted/50 border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                   signupForm.formState.errors.email
-                    ? "border-red-500"
-                    : "border-white/20"
+                    ? "border-destructive"
+                    : "border-border"
                 }`}
               />
               {signupForm.formState.errors.email && (
@@ -145,15 +136,15 @@ const Login = () => {
                       message: "Password must be at least 6 characters",
                     },
                   })}
-                  className={`w-full px-4 py-2 pr-10 bg-transparent border rounded text-white placeholder:text-gray-400 focus:outline-none ${
+                  className={`w-full px-4 py-2.5 pr-10 bg-muted/50 border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                     signupForm.formState.errors.password
-                      ? "border-red-500"
-                      : "border-white/20"
+                      ? "border-destructive"
+                      : "border-border"
                   }`}
                 />
                 <div
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-2.5 cursor-pointer text-white/70"
+                  className="absolute right-3 top-2.5 cursor-pointer text-muted-foreground"
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </div>
@@ -164,7 +155,7 @@ const Login = () => {
                 </p>
               )}
 
-              <div className="flex items-center text-white gap-2">
+              <div className="flex items-center text-foreground gap-2">
                 <input
                   type="checkbox"
                   checked={rememberMe}
@@ -174,22 +165,22 @@ const Login = () => {
               </div>
               <button
                 type="submit"
-                className="w-full py-2 bg-gradient-to-r from-emerald-500 to-cyan-600 text-white rounded font-semibold shadow-md hover:scale-105 active:scale-95 transition-transform duration-200"
+                className="w-full py-3 bg-gradient-to-r from-emerald-500 to-cyan-600 text-white rounded-xl font-semibold shadow-md hover:opacity-90 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 transition-all duration-200"
               >
                 Sign Up
               </button>
             </form>
             <div
               onClick={() => setFlipped(true)}
-              className="mt-4 text-sm text-center text-gray-300 cursor-pointer hover:text-emerald-400 transition"
+              className="mt-4 text-sm text-center text-muted-foreground cursor-pointer hover:text-emerald-500 transition"
             >
               Already have an account? Login
             </div>
           </div>
 
           {/* Login Card */}
-          <div className="absolute w-full h-full bg-[#1e293b]/60 backdrop-blur-xl rounded-2xl shadow-lg border border-white/10 p-8 rotate-y-180 backface-hidden">
-            <h2 className="text-3xl font-bold text-center text-emerald-400 mb-4">
+          <div className="absolute w-full h-full bg-card/95 backdrop-blur-xl rounded-2xl shadow-xl border border-border p-6 sm:p-8 rotate-y-180 backface-hidden">
+            <h2 className="text-2xl sm:text-3xl font-bold text-center text-emerald-500 mb-4  ">
               Welcome Back
             </h2>
             <form
@@ -206,10 +197,10 @@ const Login = () => {
                     message: "Invalid email address",
                   },
                 })}
-                className={`w-full px-4 py-2 bg-transparent border rounded text-white placeholder:text-gray-400 focus:outline-none ${
+                className={`w-full px-4 py-2.5 bg-muted/50 border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                   loginForm.formState.errors.email
-                    ? "border-red-500"
-                    : "border-white/20"
+                    ? "border-destructive"
+                    : "border-border"
                 }`}
               />
               {loginForm.formState.errors.email && (
@@ -229,15 +220,15 @@ const Login = () => {
                       message: "Password must be at least 6 characters",
                     },
                   })}
-                  className={`w-full px-4 py-2 pr-10 bg-transparent border rounded text-white placeholder:text-gray-400 focus:outline-none ${
+                  className={`w-full px-4 py-2.5 pr-10 bg-muted/50 border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                     loginForm.formState.errors.password
-                      ? "border-red-500"
-                      : "border-white/20"
+                      ? "border-destructive"
+                      : "border-border"
                   }`}
                 />
                 <div
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-2.5 cursor-pointer text-white/70"
+                  className="absolute right-3 top-2.5 cursor-pointer text-muted-foreground"
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </div>
@@ -248,7 +239,7 @@ const Login = () => {
                 </p>
               )}
 
-              <div className="flex items-center text-white gap-2">
+              <div className="flex items-center text-foreground gap-2">
                 <input
                   type="checkbox"
                   checked={rememberMe}
@@ -258,14 +249,14 @@ const Login = () => {
               </div>
               <button
                 type="submit"
-                className="w-full py-2 bg-gradient-to-r from-emerald-500 to-cyan-600 text-white rounded font-semibold shadow-md hover:scale-105 active:scale-95 transition-transform duration-200"
+                className="w-full py-3 bg-gradient-to-r from-emerald-500 to-cyan-600 text-white rounded-xl font-semibold shadow-md hover:opacity-90 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 transition-all duration-200"
               >
                 Login
               </button>
             </form>
             <div
               onClick={() => setFlipped(false)}
-              className="mt-4 text-sm text-center text-gray-300 cursor-pointer hover:text-emerald-400 transition"
+              className="mt-4 text-sm text-center text-muted-foreground cursor-pointer hover:text-emerald-500 transition"
             >
               Don’t have an account? Sign Up
             </div>
@@ -273,7 +264,7 @@ const Login = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .transform-style-3d {
           transform-style: preserve-3d;
         }

@@ -31,9 +31,9 @@ export function ResumePreview({ resumeData, templateId = "classic" }) {
   const renderClassicTemplate = () => (
     <div
       className="
-      relative w-[210mm] h-[297mm] bg-white text-white p-12 shadow-2xl font-sans
+      relative w-[210mm] h-[297mm] bg-white text-gray-800 p-12 shadow-2xl font-sans
       transform origin-top-left scale-[.45] sm:scale-50 md:scale-60 lg:scale-75
-      print:scale-100 print:transform-none
+      print:scale-100 print:transform-none print:shadow-none print:w-full print:h-full print:p-0
     "
     >
       <div className="flex flex-col h-full">
@@ -149,8 +149,8 @@ export function ResumePreview({ resumeData, templateId = "classic" }) {
     <div
       className="relative w-[210mm] h-[297mm] bg-white p-12 shadow-2xl 
     transform origin-top-left scale-[.45] sm:scale-50 md:scale-60 lg:scale-75 font-sans
-    print:scale-100 print:origin-center print:transform-none 
-    print:w-[210mm] print:h-[297mm] print:shadow-none print:text-black"
+    print:scale-100 print:transform-none 
+    print:w-full print:h-full print:shadow-none print:text-black print:p-0"
     >
       <div className="flex flex-col h-full text-sm">
         <header className="mb-6">
@@ -281,8 +281,8 @@ export function ResumePreview({ resumeData, templateId = "classic" }) {
   const renderModernTemplate = () => (
     <div className="relative w-[210mm] h-[297mm] bg-[#fdfaf5] text-gray-700 shadow-2xl flex 
     transform origin-top-left scale-[.45] sm:scale-50 md:scale-60 lg:scale-75 font-sans
-    print:scale-100 print:origin-center print:transform-none 
-    print:w-[210mm] print:h-[297mm] print:shadow-none">
+    print:scale-100 print:transform-none 
+    print:w-full print:h-full print:shadow-none print:p-0">
 
       <aside className="w-[35%] bg-white p-8 flex flex-col items-center">
         <div className="w-48 h-48 rounded-full overflow-hidden mt-8 border-8 border-[#d6c7b2]">
@@ -443,8 +443,8 @@ export function ResumePreview({ resumeData, templateId = "classic" }) {
   const renderExecutiveTemplate = () => (
     <div className="relative w-[210mm] h-[297mm] bg-white text-gray-800 shadow-2xl flex 
     transform origin-top-left scale-[.45] sm:scale-50 md:scale-60 lg:scale-75 font-sans
-    print:scale-100 print:origin-center print:transform-none 
-    print:w-[210mm] print:h-[297mm] print:shadow-none">
+    print:scale-100 print:transform-none 
+    print:w-full print:h-full print:shadow-none print:p-0">
 
       <aside className="w-[38%] bg-[#0f2c4a] p-8 text-white flex flex-col font-light">
         <div className="mx-auto mt-2">
@@ -622,8 +622,8 @@ export function ResumePreview({ resumeData, templateId = "classic" }) {
   const renderMinimalistTemplate = () => (
     <div className="relative w-[210mm] h-[297mm] bg-white text-[#333] shadow-2xl flex 
     transform origin-top-left scale-[.45] sm:scale-50 md:scale-60 lg:scale-75 font-sans
-    print:scale-100 print:origin-center print:transform-none 
-    print:w-[210mm] print:h-[297mm] print:shadow-none">
+    print:scale-100 print:transform-none 
+    print:w-full print:h-full print:shadow-none print:p-0">
 
       <aside className="w-[35%] bg-[#e8e5e1] p-8 flex flex-col">
         <div className="mt-8">
@@ -787,10 +787,10 @@ export function ResumePreview({ resumeData, templateId = "classic" }) {
   );
 
   const renderCreativeTemplate = () => (
-   <div className="relative w-[210mm] h-[297mm] bg-white text-gray-700 shadow-2xl flex
+    <div className="relative w-[210mm] h-[297mm] bg-white text-gray-700 shadow-2xl flex
     transform origin-top-left scale-[.45] sm:scale-50 md:scale-60 lg:scale-75 font-sans
-    print:scale-100 print:origin-center print:transform-none 
-    print:w-[210mm] print:h-[297mm] print:shadow-none">
+    print:scale-100 print:transform-none 
+    print:w-full print:h-full print:shadow-none print:p-0">
 
       <main className="w-full flex flex-col p-10">
         <header className="text-center mb-8">
@@ -921,5 +921,45 @@ export function ResumePreview({ resumeData, templateId = "classic" }) {
     }
   };
 
-  return <div id="resume-preview">{renderTemplate()}</div>;
+  return (
+    <div className="resume-container bg-white">
+      <style>{`
+        @media print {
+          body {
+            margin: 0;
+            padding: 0;
+            background: white;
+          }
+
+          .resume-container {
+            width: 210mm;
+            height: 297mm;
+            margin: 0;
+            padding: 15mm;
+            box-sizing: border-box;
+            page-break-after: avoid;
+            background: white !important;
+            -webkit-print-color-adjust: exact;
+          }
+
+          @page {
+            size: A4;
+            margin: 0;
+          }
+
+          * {
+            box-shadow: none !important;
+          }
+
+          /* Hide scrollbars and other unnecessary elements */
+          ::-webkit-scrollbar {
+            display: none;
+          }
+        }
+      `}</style>
+      <div id="resume-preview-content">
+        {renderTemplate()}
+      </div>
+    </div>
+  );
 }

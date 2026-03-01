@@ -30,14 +30,14 @@ const quizTopics = [
     ),
     color: "from-indigo-500 to-indigo-700",
   },
-    {
+  {
     name: "DSA",
     icon: (
       <Activity className="h-10 w-10 text-pink-300 group-hover:text-white transition" />
     ),
     color: "from-green-500 to-green-700",
   },
-    {
+  {
     name: "Computer Science Fundamentals",
     icon: (
       <Activity className="h-10 w-10 text-pink-300 group-hover:text-white transition" />
@@ -56,28 +56,32 @@ const QuizHome = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0F172A] to-[#1E293B] mt-16 py-16 px-6">
-      <h1 className="text-4xl md:text-5xl text-center font-bold text-emerald-400 mb-14">
-        Choose a Quiz Category
-      </h1>
+    <div className="bg-white dark:bg-gray-900 min-h-screen">
+      <div className="mt-16 py-16 px-6">
+        <h1 className="text-4xl md:text-5xl text-center font-bold text-emerald-400 mb-14">
+          Choose a Quiz Category
+        </h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 max-w-5xl mx-auto">
-        {quizTopics.map((topic) => (
-          <div
-            key={topic.name}
-            onClick={() => handleStart(topic.name)}
-            className={`bg-gradient-to-br ${topic.color} relative p-6 rounded-xl shadow-xl cursor-pointer transition-transform hover:scale-105 group overflow-hidden`}
-          >
-            {/* Icon */}
-            <div className="mb-4">{topic.icon}</div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 max-w-5xl mx-auto">
+          {quizTopics.map((topic) => (
 
-            {/* Title */}
-            <h2 className="text-white text-2xl font-semibold">{topic.name}</h2>
 
-            {/* Glow effect */}
-            <div className="absolute inset-0 rounded-xl bg-white opacity-10 blur-xl group-hover:opacity-20 transition-all duration-500 pointer-events-none" />
-          </div>
-        ))}
+            <div
+              key={topic.name}
+              onClick={() => handleStart(topic.name)}
+              className={`bg-gradient-to-br ${topic.color} relative p-6 rounded-xl shadow-xl cursor-pointer transition-transform hover:scale-105 group overflow-hidden`}
+            >
+              {/* Icon */}
+              <div className="mb-4">{topic.icon}</div>
+
+              {/* Title */}
+              <h2 className="text-white text-2xl font-semibold">{topic.name}</h2>
+
+              {/* Glow effect */}
+              <div className="absolute inset-0 rounded-xl bg-white opacity-10 blur-xl group-hover:opacity-20 transition-all duration-500 pointer-events-none" />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

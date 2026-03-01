@@ -73,7 +73,6 @@ button:focus-visible {
 } */
 
 @theme inline {
-
   --radius-sm: calc(var(--radius) - 4px);
 
   --radius-md: calc(var(--radius) - 2px);
@@ -146,7 +145,6 @@ button:focus-visible {
 }
 
 :root {
-
   --radius: 0.625rem;
 
   --background: oklch(1 0 0);
@@ -213,7 +211,6 @@ button:focus-visible {
 }
 
 .dark {
-
   --background: oklch(0.145 0 0);
 
   --foreground: oklch(0.985 0 0);
@@ -286,13 +283,80 @@ button:focus-visible {
   }
 }
 
-
 @keyframes gradient-x {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
 }
 
 .animate-gradient-x {
   background-size: 200% 200%;
   animation: gradient-x 15s ease infinite;
+}
+
+/* Animation delay utilities for pulse rings */
+.animation-delay-150 {
+  animation-delay: 150ms;
+}
+.animation-delay-300 {
+  animation-delay: 300ms;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.fade-in-up {
+  animation: fade-in-up 0.4s ease both;
+}
+
+/* Print styles - resume only, 1 A4 page, no browser headers/footers */
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  /* Remove scroll area constraints when printing */
+  [data-slot="scroll-area"] {
+    overflow: visible !important;
+    height: auto !important;
+  }
+  [data-slot="scroll-area-viewport"] {
+    overflow: visible !important;
+  }
+  /* Resume container - full page, clean, fit to A4 */
+  #resume-print-wrapper {
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    overflow: hidden !important;
+  }
+  /* Scale resume to fit 1 A4 page */
+  .resume-preview.print-fit > * {
+    transform: scale(0.88) !important;
+    transform-origin: top left !important;
+  }
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
 }

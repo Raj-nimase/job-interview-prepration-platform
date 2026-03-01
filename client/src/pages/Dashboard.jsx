@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import * as authApi from "../features/auth/services/auth.api";
 import {
   Mic,
   ListChecks,
@@ -21,45 +22,51 @@ export default function Dashboard() {
   const [interviewStats, setInterviewStats] = useState(null);
   const [quizStats, setQuizStats] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const user = JSON.parse(localStorage.getItem("user"));
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    if (!user || !user.id) {
-      navigate("/login");
-      return;
-    }
-
-    const fetchStats = async () => {
+    // first ask server for current user; cookie sent automatically
+    const initialize = async () => {
       try {
-        // Interview Stats
+        const me = await authApi.getMe();
+        if (!me.user || !me.user.id) {
+          throw new Error("no user returned");
+        }
+        setUser(me.user);
+
         const interviewRes = await axios.get(
-          `http://localhost:4000/dashboard/userdata/${user.id}`
+          `http://localhost:4000/dashboard/userData/${me.user.id}`,
         );
-
-        // Quiz Stats
         const quizRes = await axios.get(
-          `http://localhost:4000/dashboard/quiz-stats/${user.id}`
+          `http://localhost:4000/dashboard/quiz-stats/${me.user.id}`,
         );
-
-        console.log(interviewRes.data);
-        console.log(quizRes.data);
+        // if (process.env.NODE_ENV === "development") {
+        //   console.log("[Dashboard] Stats loaded:", {
+        //     interview: interviewRes.data,
+        //     quiz: quizRes.data,
+        //   });
+        // }
 
         setInterviewStats(interviewRes.data);
         setQuizStats(quizRes.data);
       } catch (error) {
-        console.error("Error fetching dashboard stats:", error);
+        // unauthorized or other error
+        console.error(
+          "[Dashboard] Error initializing:",
+          error.response?.data || error.message,
+        );
+        navigate("/login");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchStats();
-  }, []);
+    initialize();
+  }, [navigate]);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen text-white text-2xl">
+      <div className="flex items-center justify-center min-h-screen text-foreground text-xl">
         Loading Dashboard...
       </div>
     );
@@ -142,7 +149,7 @@ export default function Dashboard() {
     : [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0f172a] to-[#1e293b] text-white p-10 mt-12">
+    <div className="min-h-screen bg-background text-foreground p-4 sm:p-6 md:p-10 mt-24 sm:pt-28 ">
       <motion.h1
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -158,24 +165,24 @@ export default function Dashboard() {
           interviewStatsArray.map((stat, i) => (
             <motion.div
               key={i}
-              whileHover={{ scale: 1.05 }}
-              className="bg-[#1e293b] border border-gray-700 p-6 rounded-xl shadow-md hover:border-emerald-400 hover:shadow-emerald-500/20 transition-all duration-150"
+              whileHover={{ scale: 1.02 }}
+              className="bg-card border border-border p-6 rounded-2xl shadow-lg shadow-black/5 dark:shadow-black/20 hover:border-emerald-500/30 hover:shadow-xl transition-all duration-300"
             >
               {stat.icon}
               <h2 className={`text-xl font-bold ${stat.color}`}>
                 {stat.value}
               </h2>
-              <p className="text-sm text-gray-300">{stat.label}</p>
+              <p className="text-sm text-muted-foreground">{stat.label}</p>
             </motion.div>
           ))
         ) : (
-          <p className="col-span-4 text-center text-gray-400">
+          <p className="col-span-4 text-center text-muted-foreground">
             No interview stats available
           </p>
         )}
       </div>
 
-      {interviewStats.recentSessions?.length > 0 && (
+      {interviewStats?.recentSessions?.length > 0 && (
         <div className="max-w-4xl mx-auto mt-10">
           <h2 className="text-2xl font-bold mb-4  text-emerald-400">
             Recent Interview Sessions
@@ -183,24 +190,24 @@ export default function Dashboard() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-white/10 text-white">
-                  <th className="p-3 border-b border-white/20">Role</th>
-                  <th className="p-3 border-b border-white/20">Score</th>
-                  <th className="p-3 border-b border-white/20">
+                <tr className="bg-muted/50 text-foreground">
+                  <th className="p-3 border-b border-border">Role</th>
+                  <th className="p-3 border-b border-border">Score</th>
+                  <th className="p-3 border-b border-border">
                     Questions Attempted
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {interviewStats.recentSessions.map((session, idx) => (
-                  <tr key={idx} className="hover:bg-white/5 transition">
-                    <td className="p-3 border-b border-white/10">
+                  <tr key={idx} className="hover:bg-muted/30 transition">
+                    <td className="p-3 border-b border-border">
                       {session.role}
                     </td>
-                    <td className="p-3 border-b border-white/10">
+                    <td className="p-3 border-b border-border">
                       {session.overallScore}
                     </td>
-                    <td className="p-3 border-b border-white/10">
+                    <td className="p-3 border-b border-border">
                       {session.questionsAttempted}
                     </td>
                   </tr>
@@ -217,24 +224,24 @@ export default function Dashboard() {
           quizStatsArray.map((stat, i) => (
             <motion.div
               key={i}
-              whileHover={{ scale: 1.05 }}
-              className="bg-[#1e293b] border border-gray-700 p-6 rounded-xl shadow-md hover:border-emerald-400 hover:shadow-emerald-500/20 transition-all duration-150"
+              whileHover={{ scale: 1.02 }}
+              className="bg-card border border-border p-6 rounded-2xl shadow-lg shadow-black/5 dark:shadow-black/20 hover:border-emerald-500/30 hover:shadow-xl transition-all duration-300"
             >
               {stat.icon}
               <h2 className={`text-xl font-bold ${stat.color}`}>
                 {stat.value}
               </h2>
-              <p className="text-sm text-gray-300">{stat.label}</p>
+              <p className="text-sm text-muted-foreground">{stat.label}</p>
             </motion.div>
           ))
         ) : (
-          <p className="col-span-4 text-center text-gray-400">
+          <p className="col-span-4 text-center text-muted-foreground">
             No quiz stats available
           </p>
         )}
       </div>
 
-      {quizStats.topicWise?.length > 0 && (
+      {quizStats?.topicWise?.length > 0 && (
         <div className="max-w-4xl mx-auto mt-10">
           <h2 className="text-2xl font-bold mb-4 text-emerald-400">
             Performance by Topic
@@ -243,12 +250,14 @@ export default function Dashboard() {
             {quizStats.topicWise.map((item, i) => (
               <div key={i}>
                 <div className="flex justify-between mb-1">
-                  <span className="text-white font-medium">{item.topic}</span>
-                  <span className="text-sm text-gray-300">
+                  <span className="text-foreground font-medium">
+                    {item.topic}
+                  </span>
+                  <span className="text-sm text-muted-foreground">
                     {item.accuracy}%
                   </span>
                 </div>
-                <div className="w-full bg-gray-700 rounded-full h-4">
+                <div className="w-full bg-muted rounded-full h-4">
                   <div
                     className="bg-emerald-400 h-4 rounded-full transition-all duration-500"
                     style={{ width: `${item.accuracy}%` }}
@@ -267,13 +276,13 @@ export default function Dashboard() {
             key={i}
             whileHover={{ scale: 1.05 }}
             onClick={() => navigate(feature.route)}
-            className="cursor-pointer bg-[#1e293b] border border-gray-700 p-6 rounded-xl shadow-md hover:border-emerald-400 hover:shadow-emerald-500/20 transition-all duration-150"
+            className="cursor-pointer bg-card border border-border p-6 rounded-2xl shadow-lg shadow-black/5 dark:shadow-black/20 hover:border-emerald-500/30 hover:shadow-xl transition-all duration-300"
           >
             {feature.icon}
             <h2 className="text-2xl font-bold text-emerald-400 mb-2">
               {feature.title}
             </h2>
-            <p className="text-gray-300">{feature.description}</p>
+            <p className="text-muted-foreground">{feature.description}</p>
           </motion.div>
         ))}
       </div>

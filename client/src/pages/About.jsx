@@ -49,29 +49,29 @@ const values = [
 
 const AboutPage = () => {
   return (
-    <div className="bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white min-h-screen">
+    <div className="bg-background min-h-screen">
       <main>
         {/* Hero Section */}
         <motion.section
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
-          className="py-24 md:py-32 text-center bg-black/20"
+          className="py-20 sm:py-24 md:py-32 text-center bg-muted/30"
         >
-          <div className="container mx-auto px-6">
+          <div className="container mx-auto px-4 sm:px-6">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-4xl md:text-6xl font-bold mb-4"
+              className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 text-foreground"
             >
-              About <span className="text-blue-400">HireReady</span>
+              About <span className="text-emerald-500">HireReady</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto"
+              className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto"
             >
               We are a passionate team dedicated to helping you bridge the gap
               between your skills and your career aspirations.
@@ -96,11 +96,11 @@ const AboutPage = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.5 }}
                   transition={{ duration: 0.6, delay: index * 0.2 }}
-                  className="bg-white/5 p-8 rounded-xl border border-white/10"
+                  className="bg-card p-6 sm:p-8 rounded-2xl border border-border shadow-lg shadow-black/5 dark:shadow-black/20"
                 >
                   <div className="flex justify-center mb-4">{value.icon}</div>
-                  <h3 className="text-2xl font-bold mb-2">{value.title}</h3>
-                  <p className="text-gray-400">{value.description}</p>
+                  <h3 className="text-xl sm:text-2xl font-bold mb-2 text-foreground">{value.title}</h3>
+                  <p className="text-muted-foreground">{value.description}</p>
                 </motion.div>
               ))}
             </div>
@@ -113,14 +113,14 @@ const AboutPage = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.7 }}
-          className="py-20 bg-black/10"
+          className="py-16 sm:py-20 bg-muted/30"
         >
-          <div className="container mx-auto px-6">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Meet Our <span className="text-blue-400">Team</span>
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="text-center mb-12 sm:mb-16">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
+                Meet Our <span className="text-emerald-500">Team</span>
               </h2>
-              <p className="text-gray-400 max-w-2xl mx-auto">
+              <p className="text-muted-foreground max-w-2xl mx-auto">
                 The minds behind the mission, working together to build the
                 future of interview prep.
               </p>
@@ -133,18 +133,18 @@ const AboutPage = () => {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true, amount: 0.5 }}
                   transition={{ duration: 0.5, delay: index * 0.15 }}
-                  className="text-center bg-white/5 p-6 rounded-lg group"
+                  className="text-center bg-card p-6 rounded-2xl border border-border shadow-lg shadow-black/5 dark:shadow-black/20 group hover:border-emerald-500/30 transition-all duration-300"
                 >
                   <img
                     src={member.imageUrl}
                     alt={member.name}
                     data-ai-hint={member.hint}
-                    className="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-gray-700 group-hover:border-cyan-400 transition-colors duration-300"
+                    className="w-28 h-28 sm:w-32 sm:h-32 rounded-full mx-auto mb-4 border-4 border-border group-hover:border-emerald-500 transition-colors duration-300 object-cover"
                   />
-                  <h4 className="text-xl font-semibold text-white">
+                  <h4 className="text-lg sm:text-xl font-semibold text-foreground">
                     {member.name}
                   </h4>
-                  <p className="text-cyan-400">{member.role}</p>
+                  <p className="text-emerald-500">{member.role}</p>
                 </motion.div>
               ))}
             </div>

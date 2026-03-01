@@ -34,10 +34,10 @@ export default function Editor() {
         </ScrollArea>
 
         {/* Preview area with independent scroll */}
-        <ScrollArea className="h-[calc(100vh-64px)] print:h-auto">
+        <ScrollArea className="h-[calc(100vh-64px)] print:h-auto overflow-visible">
           <div
-            id="resume-preview"
-            className="pt-8 p-4 min-h-full bg-white print:w-[210mm] print:h-[297mm] print:m-auto print:p-0 print:shadow-none print:transform-none print:overflow-visible" >
+            id="resume-preview-wrapper"
+            className="pt-8 p-4 bg-gray-100 dark:bg-slate-900 print:p-0 print:bg-white" >
             <ResumePreview resumeData={resumeData} templateId={templateId} />
           </div>
         </ScrollArea>
