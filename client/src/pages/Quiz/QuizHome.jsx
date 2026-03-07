@@ -52,11 +52,11 @@ const QuizHome = () => {
   const handleStart = (topic) => {
     console.log(topic);
     // navigate(`/quiz/play?topic=${topic}`);
-    navigate(`/quizcourse`)
+    navigate(`/quizcourse`);
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900 min-h-screen">
+    <div className="min-h-screen">
       <div className="mt-16 py-16 px-6">
         <h1 className="text-4xl md:text-5xl text-center font-bold text-emerald-400 mb-14">
           Choose a Quiz Category
@@ -64,8 +64,6 @@ const QuizHome = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 max-w-5xl mx-auto">
           {quizTopics.map((topic) => (
-
-
             <div
               key={topic.name}
               onClick={() => handleStart(topic.name)}
@@ -75,7 +73,9 @@ const QuizHome = () => {
               <div className="mb-4">{topic.icon}</div>
 
               {/* Title */}
-              <h2 className="text-white text-2xl font-semibold">{topic.name}</h2>
+              <h2 className="text-white text-2xl font-semibold">
+                {topic.name}
+              </h2>
 
               {/* Glow effect */}
               <div className="absolute inset-0 rounded-xl bg-white opacity-10 blur-xl group-hover:opacity-20 transition-all duration-500 pointer-events-none" />

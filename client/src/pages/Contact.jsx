@@ -68,22 +68,51 @@ const ContactPage = () => {
                 className="space-y-6"
               >
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-foreground mb-2"
+                  >
                     Full Name
                   </label>
-                  <Input id="name" name="name" type="text" placeholder="Your Name" required className="bg-muted/50 border-border"/>
+                  <Input
+                    id="name"
+                    name="name"
+                    type="text"
+                    placeholder="Your Name"
+                    required
+                    className="bg-muted/50 border-border"
+                  />
                 </div>
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-foreground mb-2"
+                  >
                     Email Address
                   </label>
-                  <Input id="email" name="email" type="email" placeholder="you@example.com" required className="bg-muted/50 border-border"/>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    required
+                    className="bg-muted/50 border-border"
+                  />
                 </div>
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
+                  <label
+                    htmlFor="message"
+                    className="block text-sm font-medium text-foreground mb-2"
+                  >
                     Message
                   </label>
-                  <Textarea id="message" name="message" rows={5} placeholder="Your message here..." required className="bg-muted/50 border-border"/>
+                  <Textarea
+                    id="message"
+                    name="message"
+                    placeholder="Your message here..."
+                    required
+                    className="h-32 bg-muted/50 border-border resize-none overflow-y-auto "
+                  />
                 </div>
                 <Button
                   type="submit"

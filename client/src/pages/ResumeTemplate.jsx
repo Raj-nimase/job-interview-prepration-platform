@@ -51,7 +51,7 @@ export default function ResumeTemplate() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white flex flex-col ">
+    <div className="min-h-screen  text-white flex flex-col ">
       <main className="container mx-auto py-16 md:py-24 px-4">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Choose Your Resume Template</h1>

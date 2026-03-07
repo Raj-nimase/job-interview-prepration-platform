@@ -95,7 +95,7 @@ export default function QuizPlay() {
 
   if (error || questions.length === 0) {
     return (
-      <div className="bg-white dark:bg-gray-900 min-h-screen flex flex-col justify-center items-center text-black dark:text-white px-4">
+      <div className=" min-h-screen flex flex-col justify-center items-center text-black dark:text-white px-4">
         <div className="text-center p-8 bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 max-w-md w-full">
           <h2 className="text-2xl font-bold text-red-500 mb-4">Oops!</h2>
           <p className="text-lg mb-6">
@@ -115,7 +115,7 @@ export default function QuizPlay() {
   const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <div className="bg-white dark:bg-gray-900 min-h-screen transition-colors duration-300">
+    <div className=" min-h-screen transition-colors duration-300">
       <div className="container mx-auto px-4 py-12 flex justify-center items-center">
         <div className="max-w-2xl w-full bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-xl p-6 sm:p-10 border border-gray-100 dark:border-gray-700 mt-10">
           {/* Progress Header */}

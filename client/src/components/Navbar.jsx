@@ -13,8 +13,6 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-// Removed the commented-out ThemeContext import as we're managing it locally now
-import Swal from "sweetalert2";
 import { toast } from "react-hot-toast";
 import {
   NavigationMenu,
@@ -61,30 +59,21 @@ const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
-
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem("theme") || "light";
+  });
   // derive user state from auth context; no local copy
   const { user, logoutUser } = useAuth();
   const isLoggedIn = !!user;
 
   const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-    if (newTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
   useEffect(() => {
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
+    localStorage.setItem("theme", theme);
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
 
   const handleLogout = async () => {
     await logoutUser();
@@ -238,14 +227,18 @@ const Navbar = () => {
           className="md:hidden overflow-hidden border-t border-border bg-card"
         >
           <div className="flex flex-col gap-2 px-6 py-4">
-            {["Home", "About", "Contact"].map((item) => (
+            {[
+              { name: "Home", path: "/" },
+              { name: "About", path: "/about" },
+              { name: "Contact", path: "/contact" },
+            ].map((item, index) => (
               <Link
-                key={item}
-                to={`/${item.toLowerCase()}`}
+                key={index}
+                to={item.path}
                 className="py-3 font-medium text-foreground hover:text-emerald-500 transition-colors"
                 onClick={() => setIsOpen(false)}
               >
-                {item}
+                {item.name}
               </Link>
             ))}
 

@@ -6,6 +6,12 @@ import { toast } from "react-hot-toast";
 export const useAuth = () => {
   const { user, setUser, loading, setLoading } = useContext(AuthContext);
 
+  /**
+   * @description Logs in a user with the provided credentials.
+   * @param {Object} payload - The login credentials (e.g., email and password).
+   * @returns {Promise<Object>} The response from the login API, including user data.
+   * @throws Will log an error if the login process fails.
+   */
   const loginUser = useCallback(
     async (payload) => {
       setLoading(true);
@@ -23,6 +29,12 @@ export const useAuth = () => {
     [setUser, setLoading],
   );
 
+  /**
+   * @description Registers a new user with the provided information.
+   * @param {Object} payload - The registration information (e.g., name, email, password).
+   * @returns {Promise<void>} Resolves when the registration process is complete.
+   * @throws Will log an error if the registration process fails.
+   */
   const registerUser = useCallback(
     async (payload) => {
       setLoading(true);
@@ -38,6 +50,11 @@ export const useAuth = () => {
     [setUser, setLoading],
   );
 
+  /**
+   * @description Fetches the current authenticated user's information.
+   * @returns {Promise<Object|null>} The current user's information, or null if not authenticated.
+   * @throws Will log an error if the fetch process fails (except for 401 Unauthorized).
+   */
   const fetchCurrentUser = useCallback(async () => {
     setLoading(true);
     try {
@@ -53,6 +70,11 @@ export const useAuth = () => {
     }
   }, [setUser, setLoading]);
 
+  /**
+   * @description Logs out the current user.
+   * @returns {Promise<void>} Resolves when the logout process is complete.
+   * @throws Will log an error if the logout process fails.
+   */
   const logoutUser = useCallback(async () => {
     setLoading(true);
     try {

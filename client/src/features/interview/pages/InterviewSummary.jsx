@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Card,
@@ -17,34 +16,17 @@ import {
 } from "@/components/ui/accordion";
 import { Award, Bot, User, Sparkles, RotateCw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useInterview } from "../hook/useInterview";
 
 export function InterviewSummary() {
-  const [history, setHistory] = useState(null);
-  const [role, setRole] = useState(null);
-  const router = useNavigate();
-
-  useEffect(() => {
-    const storedHistory = localStorage.getItem("interviewHistory");
-    const storedRole = localStorage.getItem("interviewRole");
-
-    if (!storedHistory || !storedRole) {
-      router("/");
-    } else {
-      try {
-        const parsedHistory = JSON.parse(storedHistory);
-        setHistory(parsedHistory);
-        setRole(storedRole);
-      } catch (error) {
-        console.error("Failed to parse interview history", error);
-        router("/");
-      }
-    }
-  }, [router]);
+  const nav = useNavigate();
+  const { history, role, setHistory, setStarted } = useInterview();
 
   const handleNewInterview = () => {
     localStorage.removeItem("sessionId");
-
-    router("/");
+    setHistory([]);
+    setStarted(false);
+    nav("/");
   };
 
   if (!history || !role) {
@@ -61,7 +43,7 @@ export function InterviewSummary() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#0f172a] text-white">
       <Card className="w-full max-w-4xl bg-white text-gray-900 shadow-xl border border-gray-800 rounded-xl fade-in-up">
-        <CardHeader className="text-center p-8 rounded-t-xl ">
+        <CardHeader className="text-center p-8 rounded-t-xl">
           <div className="mx-auto bg-primary text-primary-foreground rounded-full p-4 w-fit mb-4 shadow-lg">
             <Award size={40} />
           </div>

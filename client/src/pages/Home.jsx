@@ -14,6 +14,8 @@ import Lottie from "lottie-react";
 import animationData from "../lib/B6A9PNdKG9.json";
 import Footer from "@/components/Footer";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/features/auth/hook/useAuth";
+
 
 
 // Floating gradient orbs for hero background
@@ -73,9 +75,8 @@ const Hero = () => {
     },
   };
 
-
-
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   return (
     <section className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden pt-24 pb-12 sm:pt-28 sm:pb-16">
@@ -119,7 +120,7 @@ const Hero = () => {
           </p>
           <div className="flex gap-3 sm:gap-4 flex-wrap">
             <motion.button
-              onClick={() => navigate("/login")}
+              onClick={() => navigate(!user?"/login":"/dashboard")}
               className="px-6 py-3 rounded-xl font-semibold tracking-wide text-white bg-gradient-to-r from-cyan-500 to-purple-500 shadow-lg shadow-cyan-500/25 hover:shadow-xl hover:shadow-cyan-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 active:scale-[0.98] transition-all"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}

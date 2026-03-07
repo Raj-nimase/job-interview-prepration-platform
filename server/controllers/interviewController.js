@@ -12,7 +12,7 @@ if (!GEMINI_API_KEY) {
   process.exit(1);
 }
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-const gemini = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+const gemini = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
 // ─── Deepgram (TTS only) ────────────────────────────────────────────────────────
 const DEEPGRAM_API_KEY = process.env.DEEPGRAM_API_KEY;

@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Bot, ArrowRight } from "lucide-react";
+import { useInterview } from "../hook/useInterview";
 
 const roles = [
   "Software Engineer",
@@ -38,25 +39,31 @@ const experienceLevels = [
 export function RoleSelector() {
   const [selectedRole, setSelectedRole] = useState("");
   const [selectedExperience, setSelectedExperience] = useState("");
-  const router = useNavigate();
+  const { setRole, setExperience, setHistory } = useInterview();
+  const nav = useNavigate();
 
   const handleStartInterview = () => {
-    if (selectedRole && selectedExperience) {
-      localStorage.setItem("interviewRole", selectedRole);
-      localStorage.setItem("interviewExperience", selectedExperience);
-      localStorage.removeItem("interviewHistory");
-      router("/interview");
-    }
+    if (!selectedRole || !selectedExperience) return;
+
+    setRole(selectedRole);
+    setExperience(selectedExperience);
+    setHistory([]);
+
+    localStorage.setItem("interviewRole", selectedRole);
+    localStorage.setItem("interviewExperience", selectedExperience);
+    localStorage.removeItem("interviewHistory");
+
+    nav("/interview");
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen mt-16 bg-[#0f172a] text-white">
+    <div className="flex items-center justify-center min-h-screen mt-16 text-white">
       <Card className="w-full max-w-lg shadow-2xl border-2 border-emerald-600/50 fade-in-up">
         <CardHeader className="text-center p-8">
           <div className="mx-auto bg-emerald-400 text-black rounded-full p-4 w-fit mb-4 shadow-lg">
             <Bot size={40} />
           </div>
-          <CardTitle className="text-4xl font-extrabold tracking-tight ">
+          <CardTitle className="text-4xl font-extrabold tracking-tight">
             CareerAI Interviewer
           </CardTitle>
           <CardDescription className="text-xl text-gray-400 pt-2">
@@ -65,9 +72,8 @@ export function RoleSelector() {
         </CardHeader>
 
         <CardContent className="px-8 space-y-6">
-          {/* Role Selector */}
           <Select onValueChange={setSelectedRole} value={selectedRole}>
-            <SelectTrigger className="w-full h-14 text-lg   border border-black/20">
+            <SelectTrigger className="w-full h-14 text-lg border border-black/20">
               <SelectValue placeholder="Select a role to start..." />
             </SelectTrigger>
             <SelectContent>
@@ -79,7 +85,6 @@ export function RoleSelector() {
             </SelectContent>
           </Select>
 
-          {/* Experience Selector */}
           <Select
             onValueChange={setSelectedExperience}
             value={selectedExperience}
@@ -89,11 +94,7 @@ export function RoleSelector() {
             </SelectTrigger>
             <SelectContent>
               {experienceLevels.map((level) => (
-                <SelectItem
-                  key={level}
-                  value={level}
-                  className="text-lg py-2"
-                >
+                <SelectItem key={level} value={level} className="text-lg py-2">
                   {level}
                 </SelectItem>
               ))}
