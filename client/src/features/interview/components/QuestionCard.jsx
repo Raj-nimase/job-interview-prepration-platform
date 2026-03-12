@@ -11,7 +11,7 @@ export function QuestionCard({ question, isLoading, onPlayTTS }) {
           <span className="p-2 bg-emerald-500/10 rounded-full">
             <Bot className="text-emerald-400 shrink-0" size={24} />
           </span>
-          <CardTitle className="text-xl font-semibold text-white">
+          <CardTitle className="text-xl font-semibold text-foreground">
             Question
           </CardTitle>
         </div>
@@ -20,7 +20,7 @@ export function QuestionCard({ question, isLoading, onPlayTTS }) {
           size="icon"
           onClick={() => onPlayTTS(question)}
           disabled={isLoading}
-          className="text-gray-400 hover:text-white"
+          className="text-muted-foreground hover:text-foreground"
         >
           <Volume2 />
         </Button>
@@ -29,11 +29,11 @@ export function QuestionCard({ question, isLoading, onPlayTTS }) {
       <CardContent className="pt-0">
         {isLoading ? (
           <div className="space-y-2 pt-2">
-            <Skeleton className="h-6 w-full bg-white/10" />
-            <Skeleton className="h-6 w-3/4 bg-white/10" />
+            <Skeleton className="h-6 w-full" />
+            <Skeleton className="h-6 w-3/4" />
           </div>
         ) : (
-          <p className="text-xl font-medium text-white/90 leading-relaxed">
+          <p className="text-xl font-medium text-foreground leading-relaxed">
             {question}
           </p>
         )}

@@ -28,18 +28,18 @@ export function AnswerCard({
     <Card className="shadow-xl border border-white/10">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-xl font-semibold text-white">
+          <CardTitle className="text-xl font-semibold text-foreground">
             Your Answer
           </CardTitle>
 
           {/* Voice / Type toggle */}
-          <div className="flex items-center gap-2 bg-white/5 rounded-lg p-1">
+          <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
             <button
               onClick={() => onVoiceModeChange(true)}
               className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
                 voiceMode
                   ? "bg-emerald-500 text-white shadow"
-                  : "text-gray-400 hover:text-white"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               <Mic className="inline w-3.5 h-3.5 mr-1" />
@@ -50,7 +50,7 @@ export function AnswerCard({
               className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
                 !voiceMode
                   ? "bg-emerald-500 text-white shadow"
-                  : "text-gray-400 hover:text-white"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               <Keyboard className="inline w-3.5 h-3.5 mr-1" />
@@ -79,7 +79,7 @@ export function AnswerCard({
             value={userAnswer}
             onChange={(e) => onAnswerChange(e.target.value)}
             rows={8}
-            className="bg-white/5 border-white/10 text-white text-base resize-none"
+            className="bg-background border-border text-foreground text-base resize-none"
             disabled={isLoadingFeedback || !!feedback}
           />
         )}

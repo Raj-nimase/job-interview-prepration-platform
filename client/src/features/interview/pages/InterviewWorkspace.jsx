@@ -72,7 +72,7 @@ export function InterviewWorkspace() {
 
   // Live interview screen
   return (
-    <main className="min-h-screen text-white flex flex-col items-center p-4 sm:p-6 lg:mt-12">
+    <main className="min-h-screen  flex flex-col items-center p-4 sm:p-6 lg:mt-12">
       <div className="w-full max-w-4xl space-y-6">
         <header className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
           <h1 className="text-3xl font-bold tracking-tight">
@@ -80,7 +80,7 @@ export function InterviewWorkspace() {
           </h1>
           <Badge
             variant="outline"
-            className="text-md py-2 text-white px-4 w-fit border-2"
+            className="text-md py-2  px-4 w-fit border-2"
           >
             Question {Math.min(history.length + 1, MAX_QUESTIONS)} of{" "}
             {MAX_QUESTIONS}

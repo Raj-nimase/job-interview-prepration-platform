@@ -24,7 +24,7 @@ export function VoiceAnswerInput({
             ? "border-red-500/60 bg-red-500/5"
             : isTranscribing
               ? "border-blue-500/60 bg-blue-500/5"
-              : "border-white/10 bg-white/5"
+              : "border-border bg-muted/50"
         }`}
       >
         <WaveformVisualizer isRecording={isRecording} />
@@ -79,17 +79,17 @@ export function VoiceAnswerInput({
 
       {/* Transcript display */}
       {(transcript || isTranscribing) && (
-        <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+        <div className="bg-muted border border-border rounded-xl p-4">
           <p className="text-xs text-gray-400 mb-2 font-semibold uppercase tracking-wider">
             Transcript
           </p>
           {isTranscribing && !transcript ? (
             <div className="space-y-2">
-              <Skeleton className="h-4 w-full bg-white/10" />
-              <Skeleton className="h-4 w-4/5 bg-white/10" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-4/5" />
             </div>
           ) : (
-            <p className="text-white/80 text-base leading-relaxed">
+            <p className="text-foreground/80 text-base leading-relaxed">
               {transcript}
             </p>
           )}
@@ -107,7 +107,7 @@ export function VoiceAnswerInput({
             onChange={(e) => onAnswerChange(e.target.value)}
             rows={4}
             placeholder="Edit your transcribed answer here…"
-            className="bg-white/5 border-white/10 text-white text-base resize-none"
+            className="bg-background border-border text-foreground text-base resize-none"
             disabled={!!feedback || isLoadingFeedback}
           />
         </div>
