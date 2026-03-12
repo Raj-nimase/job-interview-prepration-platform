@@ -9,7 +9,7 @@ export function FeedbackCard({ feedback, isLoading }) {
     typeof feedback === "string" ? feedback : feedback?.feedback || "";
 
   return (
-    <Card className="shadow-xl border-t-4 border-[#00d084] bg-[#1e293b]">
+    <Card className="shadow-xl border-t-4 border-[#00d084] ">
       <CardHeader>
         <CardTitle className="text-xl font-semibold flex items-center gap-3 text-white">
           <Sparkles className="text-[#00d084]" />

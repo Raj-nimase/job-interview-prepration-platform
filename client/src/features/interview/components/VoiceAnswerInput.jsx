@@ -47,8 +47,20 @@ export function VoiceAnswerInput({
               Press the microphone below to start speaking
             </span>
           )}
-          {!isRecording && !isTranscribing && transcript && (
+          {!isRecording && !isTranscribing && transcript && isLoadingFeedback && (
+            <span className="flex items-center gap-2 text-blue-400 text-sm">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Generating AI feedback…
+            </span>
+          )}
+          {!isRecording && !isTranscribing && transcript && !isLoadingFeedback && feedback && (
             <span className="flex items-center gap-1.5 text-emerald-400 text-sm">
+              <CheckCircle2 className="w-4 h-4" />
+              Feedback ready — scroll down to view
+            </span>
+          )}
+          {!isRecording && !isTranscribing && transcript && !isLoadingFeedback && !feedback && (
+            <span className="flex items-center gap-1.5 text-amber-400 text-sm">
               <CheckCircle2 className="w-4 h-4" />
               Transcription complete
             </span>

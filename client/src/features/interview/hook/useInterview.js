@@ -67,7 +67,7 @@ export function useInterview() {
       reader.readAsDataURL(blob);
     });
 
-  // ─── Send audio to Gemini STT ──────────────────────────────────────────────
+  // ─── Send audio to Gemini STT + auto-trigger AI feedback ──────────────────
   const sendAudioToBackend = async (blob) => {
     ctx.setIsTranscribing(true);
     try {
@@ -82,6 +82,28 @@ export function useInterview() {
       const text = data.transcript || "";
       ctx.setTranscript(text);
       ctx.setUserAnswer(text);
+
+      // Auto-trigger AI feedback right after transcription succeeds
+      if (text.trim()) {
+        ctx.setIsLoadingFeedback(true); // set before clearing transcribing to avoid UI flash
+        ctx.setIsTranscribing(false);
+        try {
+          const feedbackData = await getFeedbackAPI(
+            userId,
+            ctx.role,
+            ctx.experience,
+            ctx.question,
+            text, // pass transcript directly (React state may not be flushed yet)
+          );
+          ctx.setFeedback(feedbackData);
+        } catch (err) {
+          console.error("Auto-feedback error:", err);
+          // Don't alert — user can retry via the fallback button
+        } finally {
+          ctx.setIsLoadingFeedback(false);
+        }
+        return; // already cleared isTranscribing above
+      }
     } catch (err) {
       console.error("Transcription error:", err);
       ctx.setTranscript("(Transcription failed — check console)");

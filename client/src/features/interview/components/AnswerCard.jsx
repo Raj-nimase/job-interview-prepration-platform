@@ -86,19 +86,27 @@ export function AnswerCard({
       </CardContent>
 
       <CardFooter>
-        <Button
-          onClick={onSubmitFeedback}
-          disabled={
-            !userAnswer.trim() ||
-            isLoadingFeedback ||
-            !!feedback ||
-            isTranscribing
-          }
-          className="h-12 px-6 text-lg font-semibold bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer w-full sm:w-auto"
-        >
-          <Sparkles className="mr-2 h-5 w-5" />
-          {isLoadingFeedback ? "Analysing…" : "Get AI Feedback"}
-        </Button>
+        {/* Voice mode: auto-feedback runs automatically; show retry only if it failed */}
+        {/* Type mode: manual feedback button as before */}
+        {(!voiceMode || (voiceMode && !isLoadingFeedback && !feedback && userAnswer.trim() && !isTranscribing)) && (
+          <Button
+            onClick={onSubmitFeedback}
+            disabled={
+              !userAnswer.trim() ||
+              isLoadingFeedback ||
+              !!feedback ||
+              isTranscribing
+            }
+            className="h-12 px-6 text-lg font-semibold bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer w-full sm:w-auto"
+          >
+            <Sparkles className="mr-2 h-5 w-5" />
+            {voiceMode
+              ? "Retry AI Feedback"
+              : isLoadingFeedback
+                ? "Analysing…"
+                : "Get AI Feedback"}
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );
