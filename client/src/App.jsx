@@ -25,6 +25,8 @@ import { RoleSelector } from "./features/interview/pages/RoleSelector";
 
 import { AuthProvider } from "./features/auth/context/auth.context";
 import { InterviewProvider } from "./features/interview/context/interview.context";
+import { ResumeAnalyzerProvider } from "./features/resume-analyzer/context/resume-analyzer.context";
+import { ResumeAnalyzer } from "./features/resume-analyzer/pages/ResumeAnalyzer";
 function App() {
   return (
     <BrowserRouter>
@@ -41,6 +43,14 @@ function App() {
           <Route path="/editor" element={<Editor />} />
           <Route path="/resume" element={<ResumeHub />} />
           <Route path="/resumetemplate" element={<ResumeTemplate />} />
+          <Route
+            path="/resume-analyzer"
+            element={
+              <ResumeAnalyzerProvider>
+                <ResumeAnalyzer />
+              </ResumeAnalyzerProvider>
+            }
+          />
           {/* <Route path="/resumeform" element={<ResumeForm />} />
           <Route path="/resumepreview" element={<ResumePreview />} /> */}
           <Route path="/quiz" element={<QuizHome />} />

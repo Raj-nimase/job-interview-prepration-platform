@@ -9,6 +9,7 @@ import interview from "./routes/interviewRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import quizRoutes from "./routes/quizRoutes.js";
 import questionRoutes from "./routes/questionRoutes.js";
+import resumeRoutes from "./routes/resumeRoutes.js";
 import cookiparser from "cookie-parser";
 //import quizRoutes from "./routes/quizRoutes.js";
 
@@ -30,6 +31,7 @@ app.use("/interview", interview);
 app.use("/dashboard", dashboardRoutes);
 app.use("/api/quiz", quizRoutes);
 app.use("/api/questions", questionRoutes);
+app.use("/api/resume", resumeRoutes);
 //app.use("/api/quiz", quizRoutes);
 
 app.get("/", (req, res) => res.send("API is working"));

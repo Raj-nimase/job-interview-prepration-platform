@@ -10,6 +10,7 @@ import {
   User,
   Sun,
   Moon,
+  FileSearch,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -51,6 +52,13 @@ const features = [
     description:
       "Monitor your performance with detailed analytics including quiz results, interview feedback, and progress tracking.",
     link: "/dashboard",
+  },
+  {
+    icon: <FileSearch size={24} className="text-emerald-400" />,
+    title: "Resume Analyzer",
+    description:
+      "Upload your resume and get AI-powered feedback on ATS compatibility, keywords, and content quality.",
+    link: "/resume-analyzer",
   },
 ];
 
