@@ -1,20 +1,18 @@
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./features/auth/pages/Login";
-import Dashboard from "./pages/Dashboard";
-import Editor from "./pages/Editor";
+import Dashboard from "./features/dashboard/pages/DashboardPage";
+import Editor from "./features/resume-builder/pages/ResumeEditorPage";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
-import ResumeHub from "./pages/ResumeLanding";
-import { ResumeForm } from "./pages/Resume-form";
-import { ResumePreview } from "./pages/Resume-preview";
-import QuizHome from "./pages/Quiz/QuizHome";
-import QuizPlay from "./pages/Quiz/QuizPlay";
-import QuizResult from "./pages/Quiz/QuizResult";
+import ResumeHub from "./features/resume-builder/pages/ResumeLandingPage";
+import QuizHome from "./features/quiz/pages/QuizHomePage";
+import QuizPlay from "./features/quiz/pages/QuizPlayPage";
+import QuizResult from "./features/quiz/pages/QuizResultPage";
 import Navbar from "./components/Navbar";
 import InterviewTips from "./pages/Interviewtip";
-import QuizCourse from "./pages/Quiz/QuizCourse";
-import ResumeTemplate from "./pages/ResumeTemplate";
+import QuizCourse from "./features/quiz/pages/QuizCoursePage";
+import ResumeTemplate from "./features/resume-builder/pages/ResumeTemplatePage";
 
 // toast notifications
 import { Toaster } from "react-hot-toast";
