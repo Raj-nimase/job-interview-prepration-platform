@@ -1,29 +1,44 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { motion } from "framer-motion";
+import { ArrowLeft, Clock } from "lucide-react";
 
 import { useQuizQuestions } from "../hook/useQuizQuestions";
 import { useQuizSubmission } from "../hook/useQuizSubmission";
-import { QuizQuestionOptionButton } from "../components/QuizQuestionOptionButton";
-import { QuizProgressBar } from "../components/QuizProgressBar";
 
 export default function QuizPlayPage() {
   const [searchParams] = useSearchParams();
   const topic = searchParams.get("topic");
+  const level = Number(searchParams.get("level")) || 1;
   const navigate = useNavigate();
 
-  const { questions, loading, error } = useQuizQuestions(topic);
-  const { submit, submitting } = useQuizSubmission(topic);
+  const { questions, loading, error } = useQuizQuestions(topic, level);
+  const { submit, submitting } = useQuizSubmission(topic, level);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [answers, setAnswers] = useState([]);
+  const [timeElapsed, setTimeElapsed] = useState(0);
 
   useEffect(() => {
-    // Reset quiz state when topic changes
     setCurrentQuestionIndex(0);
     setSelectedOption(null);
     setAnswers([]);
-  }, [topic]);
+    setTimeElapsed(0);
+  }, [topic, level]);
+
+  // Timer
+  useEffect(() => {
+    if (loading || error || questions.length === 0) return;
+    const timer = setInterval(() => setTimeElapsed((t) => t + 1), 1000);
+    return () => clearInterval(timer);
+  }, [loading, error, questions.length]);
+
+  const formatTime = (s) => {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m}:${sec.toString().padStart(2, "0")}`;
+  };
 
   const currentQuestion = questions[currentQuestionIndex];
 
@@ -49,36 +64,37 @@ export default function QuizPlayPage() {
 
     try {
       const res = await submit(newAnswers);
-      const { score, total } = res || {};
-      navigate(`/quiz-result?score=${score}&total=${total}`);
+      const { score, total, passed, percentage } = res || {};
+      navigate(
+        `/quiz-result?score=${score}&total=${total}&topic=${encodeURIComponent(topic)}&level=${level}&passed=${passed}&percentage=${percentage}`
+      );
     } catch (err) {
-      // Keep UI consistent with previous version: show message via error box
       console.error("Error submitting quiz:", err);
-      // error state is owned by hook; we keep it minimal here.
-      // For now, just rethrow and let hook/higher UI handle.
     }
   };
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-gray-900 min-h-screen flex flex-col justify-center items-center text-black dark:text-white">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500 mb-4" />
-        <p className="text-xl font-medium">Loading questions...</p>
+      <div className="min-h-screen  flex flex-col justify-center items-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-2 border-emerald-500 border-t-transparent mb-4" />
+        <p className="text-lg font-medium text-foreground">Loading questions...</p>
+        <p className="text-sm text-muted-foreground mt-1">{topic} — Level {level}</p>
       </div>
     );
   }
 
   if (error || questions.length === 0) {
     return (
-      <div className="min-h-screen flex flex-col justify-center items-center text-black dark:text-white px-4">
-        <div className="text-center p-8 bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 max-w-md w-full">
-          <h2 className="text-2xl font-bold text-red-500 mb-4">Oops!</h2>
-          <p className="text-lg mb-6">
+      <div className="min-h-screen flex flex-col justify-center items-center px-4">
+        <div className="bg-card border border-border rounded-2xl shadow-xl p-8 text-center max-w-md w-full">
+          <div className="text-4xl mb-4">😕</div>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Oops!</h2>
+          <p className="text-muted-foreground mb-6">
             {error || "No questions available for this level."}
           </p>
           <button
             onClick={() => navigate(-1)}
-            className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
+            className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-xl font-semibold shadow-lg shadow-emerald-500/25 hover:shadow-xl transition-all active:scale-[0.98]"
           >
             Go Back
           </button>
@@ -88,72 +104,153 @@ export default function QuizPlayPage() {
   }
 
   const total = questions.length;
+  const progress = ((currentQuestionIndex + 1) / total) * 100;
 
   return (
     <div className="min-h-screen transition-colors duration-300">
-      <div className="container mx-auto px-4 py-12 flex justify-center items-center">
-        <div className="max-w-2xl w-full bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-xl p-6 sm:p-10 border border-gray-100 dark:border-gray-700 mt-10">
-          <div className="flex justify-between items-center mb-8">
-            <div className="flex flex-col">
-              <span className="text-xs font-bold uppercase tracking-wider text-green-600 dark:text-green-400 mb-1">
-                {topic}
-              </span>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                Question{" "}
-                <span className="text-black dark:text-white font-bold">
-                  {currentQuestionIndex + 1}
-                </span>{" "}
-                of{" "}
-                <span className="text-black dark:text-white font-bold">
-                  {total}
-                </span>
-              </p>
-            </div>
-          </div>
-
-          <QuizProgressBar
-            currentIndex={currentQuestionIndex}
-            total={total}
-          />
-
-          <div className="mb-10">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white leading-tight">
-              {currentQuestion.question}
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4">
-            {currentQuestion.options.map((option, idx) => (
-              <QuizQuestionOptionButton
-                key={idx}
-                option={option}
-                idx={idx}
-                selectedOption={selectedOption}
-                onSelect={handleOptionSelect}
-              />
-            ))}
-          </div>
-
-          <div className="mt-10">
+      <div className="container mx-auto px-4 pt-24 pb-12 flex justify-center items-start">
+        <div className="max-w-2xl w-full">
+          {/* Top bar */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex justify-between items-center mb-6"
+          >
             <button
-              onClick={handleNext}
-              disabled={!selectedOption || submitting}
-              className={`w-full py-4 rounded-xl font-bold text-lg shadow-lg transition-all duration-300 transform active:scale-[0.98] ${
-                selectedOption
-                  ? "bg-green-600 hover:bg-green-700 text-white shadow-green-600/20"
-                  : "bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
-              }`}
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-2 text-muted-foreground hover:text-emerald-500 transition-colors text-sm font-medium"
             >
-              {currentQuestionIndex + 1 === questions.length
-                ? submitting
-                  ? "Submitting..."
-                  : "Submit Quiz"
-                : "Next Question"}
+              <ArrowLeft className="h-4 w-4" />
+              Back
             </button>
-          </div>
+            <div className="flex items-center gap-2 text-muted-foreground text-sm">
+              <Clock className="h-4 w-4" />
+              {formatTime(timeElapsed)}
+            </div>
+          </motion.div>
+
+          {/* Quiz Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="bg-card rounded-2xl border border-border shadow-xl overflow-hidden"
+          >
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-border">
+              <div className="flex justify-between items-center">
+                <div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-500">
+                    {topic} — Level {level}
+                  </span>
+                  <p className="text-sm font-medium text-muted-foreground mt-0.5">
+                    Question{" "}
+                    <span className="text-foreground font-bold">
+                      {currentQuestionIndex + 1}
+                    </span>{" "}
+                    of{" "}
+                    <span className="text-foreground font-bold">{total}</span>
+                  </p>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs text-muted-foreground">Progress</span>
+                  <p className="text-sm font-bold text-emerald-500">{Math.round(progress)}%</p>
+                </div>
+              </div>
+
+              {/* Progress bar */}
+              <div className="mt-3 w-full bg-muted/60 dark:bg-muted/40 h-2 rounded-full overflow-hidden">
+                <motion.div
+                  className="bg-emerald-500  h-full rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.5 }}
+                />
+              </div>
+            </div>
+
+            {/* Question */}
+            <div className="p-6 sm:p-8">
+              <motion.h2
+                key={currentQuestionIndex}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+                className="text-xl sm:text-2xl font-bold text-foreground leading-relaxed mb-8"
+              >
+                {currentQuestion.question}
+              </motion.h2>
+
+              {/* Options */}
+              <motion.div
+                key={`opts-${currentQuestionIndex}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+                className="grid grid-cols-1 gap-3"
+              >
+                {currentQuestion.options.map((option, idx) => {
+                  const isSelected = selectedOption === option;
+                  return (
+                    <motion.button
+                      key={idx}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      onClick={() => handleOptionSelect(option)}
+                      className={`group w-full text-left px-5 py-4 rounded-xl transition-all duration-200 border-2 flex items-center ${
+                        isSelected
+                          ? "border-emerald-500 bg-emerald-500/10 dark:bg-emerald-500/5 text-emerald-700 dark:text-emerald-300 ring-2 ring-emerald-500/20"
+                          : "border-border hover:border-emerald-500/40 hover:bg-accent text-foreground"
+                      }`}
+                    >
+                      <span
+                        className={`w-8 h-8 rounded-lg border-2 flex items-center justify-center mr-4 text-sm font-bold transition-colors flex-shrink-0 ${
+                          isSelected
+                            ? "bg-emerald-500 border-emerald-500 text-white"
+                            : "border-border group-hover:border-emerald-400 text-muted-foreground"
+                        }`}
+                      >
+                        {String.fromCharCode(65 + idx)}
+                      </span>
+                      <span className="font-medium">{option}</span>
+
+                      {isSelected && (
+                        <svg
+                          className="w-5 h-5 text-emerald-500 ml-auto flex-shrink-0"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </motion.button>
+                  );
+                })}
+              </motion.div>
+
+              {/* Next / Submit Button */}
+              <div className="mt-8">
+                <button
+                  onClick={handleNext}
+                  disabled={!selectedOption || submitting}
+                  className={`w-full py-4 rounded-xl font-bold text-lg shadow-lg transition-all duration-300 active:scale-[0.98] ${
+                    selectedOption
+                      ? "bg-emerald-600 text-white  hover:shadow-xl "
+                      : "bg-muted text-muted-foreground cursor-not-allowed"
+                  }`}
+                >
+                  {currentQuestionIndex + 1 === questions.length
+                    ? submitting
+                      ? "Submitting..."
+                      : "Submit Quiz"
+                    : "Next Question →"}
+                </button>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </div>
   );
 }
-

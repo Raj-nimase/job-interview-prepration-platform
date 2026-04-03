@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchQuizQuestions } from "../services/quiz.api";
 
-export function useQuizQuestions(topic) {
+export function useQuizQuestions(topic, level) {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -10,18 +10,18 @@ export function useQuizQuestions(topic) {
     let mounted = true;
 
     const run = async () => {
-      if (!topic) {
+      if (!topic || !level) {
         if (!mounted) return;
         setLoading(false);
         setQuestions([]);
-        setError("No topic selected. Please go back and select a topic.");
+        setError("No topic or level selected. Please go back and select a topic.");
         return;
       }
 
       try {
         setLoading(true);
         setError(null);
-        const data = await fetchQuizQuestions(topic);
+        const data = await fetchQuizQuestions(topic, level);
         if (!mounted) return;
         setQuestions(Array.isArray(data) ? data : []);
       } catch (err) {
@@ -39,8 +39,7 @@ export function useQuizQuestions(topic) {
     return () => {
       mounted = false;
     };
-  }, [topic]);
+  }, [topic, level]);
 
   return { questions, loading, error };
 }
-

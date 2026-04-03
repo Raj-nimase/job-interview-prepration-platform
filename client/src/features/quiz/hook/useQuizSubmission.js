@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import * as authApi from "../../auth/services/auth.api";
 import { submitQuizAttempt } from "../services/quiz.api";
 
-export function useQuizSubmission(topic) {
+export function useQuizSubmission(topic, level) {
   const [submitting, setSubmitting] = useState(false);
 
   const submit = useCallback(
@@ -13,6 +13,7 @@ export function useQuizSubmission(topic) {
         const res = await submitQuizAttempt({
           userId: me?.user?.id,
           topic,
+          level,
           answers,
         });
         return res;
@@ -20,9 +21,8 @@ export function useQuizSubmission(topic) {
         setSubmitting(false);
       }
     },
-    [topic]
+    [topic, level]
   );
 
   return { submit, submitting };
 }
-

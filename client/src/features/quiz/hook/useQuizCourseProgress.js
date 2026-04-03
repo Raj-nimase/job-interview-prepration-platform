@@ -1,16 +1,38 @@
 import { useEffect, useState } from "react";
+import { fetchUserProgress } from "../services/quiz.api";
 
-export function useQuizCourseProgress(defaultLevel = 1) {
-  const [unlockedLevel, setUnlockedLevel] = useState(() => {
-    const saved = localStorage.getItem("unlockedLevel");
-    const parsed = saved ? parseInt(saved, 10) : defaultLevel;
-    return Number.isFinite(parsed) ? parsed : defaultLevel;
-  });
+export function useQuizCourseProgress(userId, topic) {
+  const [unlockedLevel, setUnlockedLevel] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem("unlockedLevel", unlockedLevel);
-  }, [unlockedLevel]);
+    let mounted = true;
 
-  return { unlockedLevel, setUnlockedLevel };
+    const loadProgress = async () => {
+      if (!userId || !topic) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const data = await fetchUserProgress(userId, topic);
+        if (!mounted) return;
+        setUnlockedLevel(data.unlockedLevel || 1);
+      } catch (err) {
+        console.error("[QuizCourse] Error fetching progress:", err);
+        if (!mounted) return;
+        // Fallback to level 1
+        setUnlockedLevel(1);
+      } finally {
+        if (!mounted) return;
+        setLoading(false);
+      }
+    };
+
+    loadProgress();
+    return () => { mounted = false; };
+  }, [userId, topic]);
+
+  return { unlockedLevel, setUnlockedLevel, loading };
 }
-
