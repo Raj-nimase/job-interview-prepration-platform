@@ -74,6 +74,7 @@ export function InterviewSummary() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <main
+        id="interview-summary-print"
         className="max-w-[80vw] mx-auto p-6 md:p-10 lg:p-16"
       >
         <header className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12 md:mb-4 items-start">
@@ -91,8 +92,10 @@ export function InterviewSummary() {
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 xl:gap-12">
           <SummaryQuestionBreakdown history={history} />
           <SummaryInsightsAside
+            role={role}
             averageScore={averageScore}
             questionCount={history.length}
+            history={history}
             onNewInterview={handleNewInterview}
           />
         </div>

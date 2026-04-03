@@ -1,18 +1,20 @@
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./features/auth/pages/Login";
-import DashboardPage from "./features/dashboard/pages/DashboardPage";
+import Dashboard from "./pages/Dashboard";
+import Editor from "./pages/Editor";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
-import ResumeLandingPage from "./features/resume-builder/pages/ResumeLandingPage";
-import QuizHomePage from "./features/quiz/pages/QuizHomePage";
-import QuizPlayPage from "./features/quiz/pages/QuizPlayPage";
-import QuizResultPage from "./features/quiz/pages/QuizResultPage";
+import ResumeHub from "./pages/ResumeLanding";
+import { ResumeForm } from "./pages/Resume-form";
+import { ResumePreview } from "./pages/Resume-preview";
+import QuizHome from "./pages/Quiz/QuizHome";
+import QuizPlay from "./pages/Quiz/QuizPlay";
+import QuizResult from "./pages/Quiz/QuizResult";
 import Navbar from "./components/Navbar";
 import InterviewTips from "./pages/Interviewtip";
-import QuizCoursePage from "./features/quiz/pages/QuizCoursePage";
-import ResumeTemplatePage from "./features/resume-builder/pages/ResumeTemplatePage";
-import ResumeEditorPage from "./features/resume-builder/pages/ResumeEditorPage";
+import QuizCourse from "./pages/Quiz/QuizCourse";
+import ResumeTemplate from "./pages/ResumeTemplate";
 
 // toast notifications
 import { Toaster } from "react-hot-toast";
@@ -44,13 +46,13 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/about" element={<About />} />
           <Route path="/tips" element={<InterviewTips />} />
-          <Route path="/editor" element={<ResumeEditorPage />} />
-          <Route path="/resume" element={<ResumeLandingPage />} />
-          <Route path="/resumetemplate" element={<ResumeTemplatePage />} />
+          <Route path="/editor" element={<Editor />} />
+          <Route path="/resume" element={<ResumeHub />} />
+          <Route path="/resumetemplate" element={<ResumeTemplate />} />
           <Route
             path="/resume-analyzer"
             element={
@@ -61,10 +63,10 @@ function App() {
           />
           {/* <Route path="/resumeform" element={<ResumeForm />} />
           <Route path="/resumepreview" element={<ResumePreview />} /> */}
-          <Route path="/quiz" element={<QuizHomePage />} />
-          <Route path="/quiz/play" element={<QuizPlayPage />} />
-          <Route path="/quiz-result" element={<QuizResultPage />} />
-          <Route path="/quizcourse" element={<QuizCoursePage />} />
+          <Route path="/quiz" element={<QuizHome />} />
+          <Route path="/quiz/play" element={<QuizPlay />} />
+          <Route path="/quiz-result" element={<QuizResult />} />
+          <Route path="/quizcourse" element={<QuizCourse />} />
           {/* Interview routes - wrapped in shared InterviewLayout to preserve state */}
           <Route element={<InterviewLayout />}>
             <Route path="/selectRole" element={<RoleSelector />} />
