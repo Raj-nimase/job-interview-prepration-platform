@@ -1,294 +1,322 @@
 import { motion } from "framer-motion";
 import {
-  CheckCircle,
-  AlertTriangle,
-  Lightbulb,
-  Tag,
-  AlertCircle,
+  ArrowLeft,
+  CheckCircle2,
+  TriangleAlert,
   TrendingUp,
-  FileText,
-  Zap,
 } from "lucide-react";
-import { ScoreRing } from "./ScoreRing";
+
+const SECTION_LABELS = {
+  contactInfo: "Contact Info",
+  experience: "Professional Experience",
+  education: "Education Alignment",
+  skills: "Skill Coverage",
+  formatting: "Parsing & Formatting",
+};
+
+const SECTION_HINTS = {
+  contactInfo: "Completeness and professionalism",
+  experience: "Action verb density and quantified impact",
+  education: "Degree and certification relevance",
+  skills: "Role-specific and in-demand skills",
+  formatting: "Machine readability and ATS parsing",
+};
 
 const fadeUp = (delay = 0) => ({
-  initial: { opacity: 0, y: 20 },
+  initial: { opacity: 0, y: 18 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5, ease: "easeOut", delay },
+  transition: { duration: 0.35, delay },
 });
 
-export function AnalysisResult({ analysis }) {
+const MotionDiv = motion.div;
+
+function toHundredScale(score) {
+  const numeric = Number(score);
+  if (Number.isNaN(numeric)) return 0;
+  if (numeric <= 10) return Math.max(0, Math.min(100, numeric * 10));
+  return Math.max(0, Math.min(100, numeric));
+}
+
+function getBarColor(score) {
+  if (score >= 80) return "#34d399";
+  if (score >= 65) return "#fbbf24";
+  return "#f87171";
+}
+
+function getReadiness(score) {
+  if (score >= 80) return "READY";
+  if (score >= 65) return "POLISHING";
+  return "REWORK";
+}
+
+function getScoreLabel(score) {
+  if (score >= 80)
+    return "High role alignment with minor optimization gaps.";
+  if (score >= 65)
+    return "Good baseline with targeted improvements needed.";
+  return "Requires significant refinement to improve match quality.";
+}
+
+function formatDateLike(value) {
+  if (!value) return "N/A";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "N/A";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  }).format(date);
+}
+
+function toInsightPoints(sectionFeedback) {
+  if (!sectionFeedback) return [];
+  return sectionFeedback
+    .split(/\.|\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .slice(0, 2);
+}
+
+export function AnalysisResult({ analysis, targetRole, onBack }) {
   if (!analysis) return null;
 
-  const sectionEntries = analysis.sections
-    ? Object.entries(analysis.sections)
-    : [];
+  const overallScore = Math.round(toHundredScale(analysis.overallScore));
+  const atsScore = Math.round(toHundredScale(analysis.atsScore));
+  const sections = Object.entries(analysis.sections || {});
+  const role = targetRole || "Not specified";
+  const refId = analysis.referenceId || analysis.id || "ANALYSIS-REPORT";
+  const lastScan = formatDateLike(
+    analysis.lastScanAt || analysis.updatedAt || analysis.createdAt
+  );
 
-  const getSectionLabel = (key) => {
-    const labels = {
-      contactInfo: "Contact Info",
-      experience: "Experience",
-      education: "Education",
-      skills: "Skills",
-      formatting: "Formatting",
-    };
-    return labels[key] || key;
-  };
-
-  const getScoreBarColor = (score) => {
-    if (score >= 8) return "bg-emerald-500";
-    if (score >= 6) return "bg-yellow-500";
-    if (score >= 4) return "bg-orange-500";
-    return "bg-red-500";
-  };
-
-  const getScoreBadge = (score) => {
-    if (score >= 8)
-      return "bg-emerald-500/10 text-emerald-600 border border-emerald-500/30";
-    if (score >= 6)
-      return "bg-yellow-500/10 text-yellow-600 border border-yellow-500/30";
-    if (score >= 4)
-      return "bg-orange-500/10 text-orange-600 border border-orange-500/30";
-    return "bg-red-500/10 text-red-600 border border-red-500/30";
-  };
+  const strengths = (analysis.strengths || []).slice(0, 2);
+  const foundKeywords = (analysis.keywords?.found || []).slice(0, 8);
+  const missingKeywords = (analysis.keywords?.missing || []).slice(0, 8);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="w-full min-w-0 space-y-4"
-    >
-      {/* ── Score Hero Card ── */}
-      <motion.div
-        {...fadeUp(0)}
-        className="bg-card border border-border rounded-2xl p-6 shadow-sm"
-      >
-        <div className="flex flex-wrap items-center gap-8">
-          {/* Rings */}
-          <div className="flex items-center gap-8">
-            <ScoreRing
-              score={analysis.overallScore || 0}
-              label="Overall"
-              size={120}
-              strokeWidth={10}
-            />
-            <ScoreRing
-              score={analysis.atsScore || 0}
-              label="ATS Match"
-              size={120}
-              strokeWidth={10}
-            />
-          </div>
-          {/* Summary text */}
-          <div className="flex-1 min-w-[200px]">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-border bg-muted/50 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-              <TrendingUp size={12} className="text-emerald-500" />
-              Analysis Summary
-            </div>
-            <h2 className="text-xl font-bold text-foreground mb-2">
-              Here's how your resume performed
-            </h2>
-            {analysis.summary && (
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {analysis.summary}
-              </p>
-            )}
-          </div>
-        </div>
-      </motion.div>
-
-      {/* ── 2×2 Grid: Strengths | Areas | Section | Action ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Strengths */}
-        {analysis.strengths?.length > 0 && (
-          <motion.div
-            {...fadeUp(0.08)}
-            className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-5 shadow-sm flex flex-col gap-4"
-          >
-            <div className="flex items-center gap-2.5 shrink-0">
-              <span className="p-2 rounded-xl bg-emerald-500/10">
-                <CheckCircle size={16} className="text-emerald-500" />
-              </span>
-              <h4 className="text-base font-bold text-foreground">
-                Top Strengths
-              </h4>
-              <span className="ml-auto text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600">
-                {analysis.strengths.length}
-              </span>
-            </div>
-            <ul className="space-y-2.5">
-              {analysis.strengths.map((s, i) => (
-                <li
-                  key={i}
-                  className="flex items-start gap-3 bg-card rounded-xl px-3.5 py-2.5 border border-border/60 shadow-sm"
-                >
-                  <CheckCircle size={15} className="text-emerald-500 shrink-0 mt-0.5" />
-                  <span className="text-sm text-foreground/80 min-w-0">{s}</span>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-        )}
-
-        {/* Areas to Improve */}
-        {analysis.weaknesses?.length > 0 && (
-          <motion.div
-            {...fadeUp(0.12)}
-            className="bg-yellow-500/5 border border-yellow-500/20 rounded-2xl p-5 shadow-sm flex flex-col gap-4"
-          >
-            <div className="flex items-center gap-2.5 shrink-0">
-              <span className="p-2 rounded-xl bg-yellow-500/10">
-                <AlertTriangle size={16} className="text-yellow-500" />
-              </span>
-              <h4 className="text-base font-bold text-foreground">
-                Areas to Improve
-              </h4>
-              <span className="ml-auto text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full bg-yellow-500/15 text-yellow-600">
-                {analysis.weaknesses.length}
-              </span>
-            </div>
-            <ul className="space-y-2.5">
-              {analysis.weaknesses.map((w, i) => (
-                <li
-                  key={i}
-                  className="flex items-start gap-3 bg-card rounded-xl px-3.5 py-2.5 border border-border/60 shadow-sm"
-                >
-                  <AlertTriangle size={15} className="text-yellow-500 shrink-0 mt-0.5" />
-                  <span className="text-sm text-foreground/80 min-w-0">{w}</span>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-        )}
-
-        {/* Section Breakdown */}
-        {sectionEntries.length > 0 && (
-          <motion.div
-            {...fadeUp(0.16)}
-            className="bg-card border border-border rounded-2xl p-5 shadow-sm flex flex-col gap-4"
-          >
-            <div className="flex items-center gap-2.5 shrink-0">
-              <span className="p-2 rounded-xl bg-muted">
-                <FileText size={16} className="text-muted-foreground" />
-              </span>
-              <h3 className="text-base font-bold text-foreground">
-                Section Breakdown
-              </h3>
-            </div>
-            <div className="space-y-4">
-              {sectionEntries.map(([key, section]) => (
-                <div key={key}>
-                  <div className="flex justify-between items-center mb-1 gap-2">
-                    <span className="text-sm font-bold text-foreground">
-                      {getSectionLabel(key)}
-                    </span>
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${getScoreBadge(section.score)}`}>
-                      {section.score} / 10
-                    </span>
-                  </div>
-                  {section.feedback && (
-                    <p className="text-xs text-muted-foreground mb-1.5">{section.feedback}</p>
-                  )}
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <motion.div
-                      className={`h-2 rounded-full ${getScoreBarColor(section.score)}`}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${(section.score / 10) * 100}%` }}
-                      transition={{ duration: 0.9, ease: "easeOut" }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-
-        {/* Action Plan (Suggestions) */}
-        {analysis.suggestions?.length > 0 && (
-          <motion.div
-            {...fadeUp(0.2)}
-            className="bg-blue-500/5 border border-blue-500/20 rounded-2xl p-5 shadow-sm flex flex-col gap-4"
-          >
-            <div className="flex items-center gap-2.5 shrink-0">
-              <span className="p-2 rounded-xl bg-blue-500/10">
-                <Lightbulb size={16} className="text-blue-500" />
-              </span>
-              <h4 className="text-base font-bold text-foreground">
-                Action Plan
-              </h4>
-            </div>
-            <ul className="space-y-2.5">
-              {analysis.suggestions.map((s, i) => (
-                <li
-                  key={i}
-                  className="flex items-start gap-3 bg-card rounded-xl px-3.5 py-2.5 border border-border/60 shadow-sm"
-                >
-                  <span className="p-1 rounded-md bg-blue-500/10 shrink-0 mt-0.5">
-                    <Zap size={11} className="text-blue-500" />
-                  </span>
-                  <span className="text-sm text-foreground/80 min-w-0">{s}</span>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-        )}
-      </div>
-
-      {/* ── ATS Keywords (full width) ── */}
-      {analysis.keywords && (
-        <motion.div
-          {...fadeUp(0.24)}
-          className="bg-card border border-border rounded-2xl p-5 shadow-sm flex flex-col gap-4"
+    <div className="h-full w-full bg-background">
+      <div className="w-full mt-12 p-4 sm:p-6 lg:p-10 space-y-6">
+        
+        {/* Header */}
+        <MotionDiv
+          {...fadeUp(0)}
+          className="flex flex-wrap items-center justify-between gap-4"
         >
-          <div className="flex items-center gap-2.5">
-            <span className="p-2 rounded-xl bg-muted">
-              <Tag size={16} className="text-emerald-500" />
+          <div className="flex items-center gap-5">
+            <button
+              className="group inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground hover:text-emerald-400"
+              onClick={onBack}
+            >
+              <ArrowLeft
+                size={14}
+                className="transition-transform group-hover:-translate-x-0.5"
+              />
+              Dashboard
+            </button>
+
+            <div className="hidden h-4 w-px bg-white/10 sm:block" />
+
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-foreground">
+                Full Analysis Report
+              </h1>
+
+              <div className="mt-1 flex gap-4">
+                <span className="text-xs font-medium uppercase tracking-wide text-emerald-400">
+                  {role}
+                </span>
+                <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {refId}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-right">
+            <span className="block text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Conducted
             </span>
-            <h3 className="text-base font-bold text-foreground">
-              ATS Keywords
-            </h3>
+            <span className="text-sm font-semibold text-foreground">
+              {lastScan}
+            </span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {analysis.keywords.found?.length > 0 && (
-              <div className="min-w-0">
-                <h4 className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                  <CheckCircle size={13} className="shrink-0" />
-                  Successfully Found
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {analysis.keywords.found.map((k, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1 bg-background text-emerald-700 dark:text-emerald-400 text-xs rounded-lg font-medium border border-emerald-500/30"
-                    >
-                      {k}
-                    </span>
-                  ))}
-                </div>
+        </MotionDiv>
+
+        {/* Grid Layout */}
+        <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
+
+          {/* LEFT */}
+          <MotionDiv {...fadeUp(0.05)} className="xl:col-span-3 space-y-5">
+
+            {/* Overall */}
+            <section className="rounded-xl border border-white/10 bg-white/[0.03] p-6">
+              <h3 className="text-lg font-semibold text-foreground">
+                Overall Assessment
+              </h3>
+
+              <div className="mt-3 flex items-baseline gap-2">
+                <span className="text-4xl sm:text-5xl font-bold">
+                  {overallScore}
+                </span>
+                <span className="text-sm text-muted-foreground">/100</span>
               </div>
-            )}
-            {analysis.keywords.missing?.length > 0 && (
-              <div className="min-w-0">
-                <h4 className="text-xs font-bold text-red-600 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                  <AlertCircle size={13} className="shrink-0" />
-                  Missing (Consider Adding)
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {analysis.keywords.missing.map((k, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1 bg-background text-red-600 dark:text-red-400 text-xs rounded-lg font-medium border border-red-400/40"
-                    >
-                      {k}
-                    </span>
-                  ))}
-                </div>
+
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                {analysis.summary || getScoreLabel(overallScore)}
+              </p>
+            </section>
+
+            {/* ATS */}
+            <section className="rounded-xl border border-white/10 bg-white/[0.03] p-6">
+              <h3 className="text-lg font-semibold text-foreground">
+                ATS Match
+              </h3>
+
+              <div className="mt-3 flex items-baseline gap-2">
+                <span className="text-4xl sm:text-5xl font-bold">
+                  {atsScore}
+                </span>
+                <span className="text-sm text-muted-foreground">%</span>
               </div>
-            )}
-          </div>
-        </motion.div>
-      )}
-    </motion.div>
+
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                {analysis.atsFeedback || getScoreLabel(atsScore)}
+              </p>
+            </section>
+
+          </MotionDiv>
+
+          {/* CENTER */}
+          <MotionDiv {...fadeUp(0.1)} className="xl:col-span-6">
+            <section className="rounded-xl border border-white/10 bg-white/[0.03]">
+
+              <div className="px-6 py-4 border-b border-white/10">
+                <h2 className="text-lg font-semibold text-foreground">
+                  Section Analysis
+                </h2>
+              </div>
+
+              {sections.map(([key, section], i) => {
+                const score = toHundredScale(section?.score);
+                const insights = toInsightPoints(section?.feedback);
+
+                return (
+                  <MotionDiv
+                    key={key}
+                    {...fadeUp(0.12 + i * 0.03)}
+                    className="px-6 py-4 border-b border-white/10 last:border-none"
+                  >
+                    <div className="flex justify-between">
+                      <div>
+                        <p className="text-base font-semibold">
+                          {SECTION_LABELS[key]}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {SECTION_HINTS[key]}
+                        </p>
+                      </div>
+
+                      <span
+                        className="text-sm font-semibold"
+                        style={{ color: getBarColor(score) }}
+                      >
+                        {score.toFixed(1)}
+                      </span>
+                    </div>
+
+                    <div className="mt-3 h-1 bg-white/10 rounded-full overflow-hidden">
+                      <motion.div
+                        className="h-full"
+                        style={{ backgroundColor: getBarColor(score) }}
+                        initial={{ width: 0 }}
+                        animate={{ width: `${score}%` }}
+                      />
+                    </div>
+
+                    <ul className="mt-3 space-y-1">
+                      {insights.map((point) => (
+                        <li
+                          key={point}
+                          className="text-sm leading-relaxed text-muted-foreground"
+                        >
+                          • {point}
+                        </li>
+                      ))}
+                    </ul>
+                  </MotionDiv>
+                );
+              })}
+            </section>
+          </MotionDiv>
+
+          {/* RIGHT */}
+          <MotionDiv {...fadeUp(0.14)} className="xl:col-span-3 space-y-5">
+
+            {/* Strengths */}
+            <section>
+              <h2 className="text-sm font-semibold text-muted-foreground">
+                Strengths
+              </h2>
+
+              <div className="mt-3 space-y-2">
+                {strengths.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex gap-3 p-4 rounded-xl border border-white/10 bg-white/[0.03]"
+                  >
+                    {idx === 0 ? <CheckCircle2 size={16} /> : <TrendingUp size={16} />}
+                    <p className="text-sm leading-relaxed">{item}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Keywords */}
+            <section className="p-6 rounded-xl border border-white/10 bg-white/[0.03]">
+              <h2 className="text-sm font-semibold text-muted-foreground">
+                Keywords
+              </h2>
+
+              <div className="mt-4 space-y-4">
+
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    Found
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {foundKeywords.map((k) => (
+                      <span
+                        key={k}
+                        className="px-2 py-1 text-xs font-medium rounded bg-emerald-500/10"
+                      >
+                        {k}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    Missing
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {missingKeywords.map((k) => (
+                      <span
+                        key={k}
+                        className="px-2 py-1 text-xs font-medium rounded bg-white/10"
+                      >
+                        {k}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+            </section>
+
+          </MotionDiv>
+        </div>
+      </div>
+    </div>
   );
 }

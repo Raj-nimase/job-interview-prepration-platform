@@ -17,15 +17,18 @@ export function useResumeAnalyzer() {
 
     ctx.setError("");
     ctx.setAnalysis(null);
+    ctx.setView("analyzing");
     ctx.setIsAnalyzing(true);
 
     try {
       const data = await analyzeResumeAPI(ctx.file, ctx.targetRole, userId);
       ctx.setAnalysis(data);
+      ctx.setView("results");
     } catch (err) {
       const message =
         err.response?.data?.error || err.message || "Failed to analyze resume";
       ctx.setError(message);
+      ctx.setView("upload");
     } finally {
       ctx.setIsAnalyzing(false);
     }
@@ -49,6 +52,7 @@ export function useResumeAnalyzer() {
     ctx.setAnalysis(null);
     ctx.setError("");
     ctx.setTargetRole("");
+    ctx.setView("upload");
   };
 
   return {

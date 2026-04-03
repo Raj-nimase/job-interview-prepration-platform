@@ -1,9 +1,16 @@
 import { useRef } from "react";
 import { motion } from "framer-motion";
-import { Upload, FileText, X, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  Upload,
+  FileText,
+  X,
+  Briefcase,
+  AlertCircle,
+  ArrowRight,
+} from "lucide-react";
+
+const MotionP = motion.p;
+const MotionButton = motion.button;
 
 export function ResumeUploadForm({
   file,
@@ -19,30 +26,36 @@ export function ResumeUploadForm({
   const handleDrop = (e) => {
     e.preventDefault();
     const droppedFile = e.dataTransfer.files[0];
-    if (droppedFile && droppedFile.type === "application/pdf") {
+    const isPdf =
+      droppedFile &&
+      (droppedFile.type === "application/pdf" ||
+        droppedFile.name?.toLowerCase().endsWith(".pdf"));
+    if (isPdf) {
       onFileChange(droppedFile);
     }
   };
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
+  const handleDragOver = (e) => e.preventDefault();
 
   const handleFileSelect = (e) => {
     const selected = e.target.files[0];
-    if (selected) {
-      onFileChange(selected);
-    }
+    if (selected) onFileChange(selected);
+    // Reset input so selecting the same file again still triggers onChange.
+    e.target.value = "";
   };
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       {/* Drop Zone */}
       <div
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onClick={() => fileInputRef.current?.click()}
-        className="border-2 border-dashed border-border rounded-2xl p-8 text-center cursor-pointer hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-colors"
+        className={`relative flex h-48 items-center justify-center rounded-2xl border-2 border-dashed transition ${
+          file
+            ? "border-emerald-500/60 bg-emerald-500/5"
+            : "border-border hover:border-emerald-500/60 hover:bg-emerald-500/5"
+        }`}
       >
         <input
           ref={fileInputRef}
@@ -52,82 +65,89 @@ export function ResumeUploadForm({
           className="hidden"
         />
         {file ? (
-          <div className="flex items-center justify-center gap-3 min-w-0">
-            <FileText size={24} className="text-emerald-500 shrink-0" />
-            <div className="text-left min-w-0 overflow-hidden">
-              <p className="font-medium text-foreground truncate">{file.name}</p>
+          <div className="z-[1] flex items-center gap-3 px-4">
+            <FileText size={28} className="text-emerald-500" />
+            <div className="text-left min-w-0">
+              <p className="font-semibold text-foreground truncate max-w-[220px] sm:max-w-[340px]">
+                {file.name}
+              </p>
               <p className="text-xs text-muted-foreground">
-                {(file.size / 1024).toFixed(1)} KB
+                {(file.size / 1024).toFixed(1)} KB · PDF
               </p>
             </div>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onFileChange(null);
+                if (fileInputRef.current) fileInputRef.current.value = "";
               }}
-              className="ml-2 p-1 rounded-full hover:bg-muted transition-colors shrink-0"
+              className="z-20 h-7 w-7 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center text-muted-foreground hover:text-foreground"
+              aria-label="Remove file"
             >
-              <X size={16} className="text-muted-foreground" />
+              <X size={14} />
             </button>
           </div>
         ) : (
-          <div className="space-y-2">
-            <Upload size={36} className="mx-auto text-muted-foreground" />
-            <p className="font-medium text-foreground">
-              Drop your resume PDF here
+          <div className="flex flex-col items-center text-center gap-3 pointer-events-none">
+            <div className="h-14 w-14 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+              <Upload size={28} />
+            </div>
+            <p className="text-base font-semibold text-foreground">
+              Drag &amp; drop your PDF
             </p>
             <p className="text-sm text-muted-foreground">
-              or click to browse (PDF only, max 10MB)
+              or click to browse files (Max 10MB)
             </p>
           </div>
         )}
       </div>
 
-      {/* Target Role Input */}
-      <div className="space-y-2">
-        <Label htmlFor="targetRole" className="text-foreground">
-          Target Role (optional)
-        </Label>
-        <Input
-          id="targetRole"
-          type="text"
-          placeholder="e.g. Frontend Developer, Data Scientist, Product Manager..."
-          value={targetRole}
-          onChange={(e) => onTargetRoleChange(e.target.value)}
-          className="bg-background"
-        />
-        <p className="text-xs text-muted-foreground">
-          Providing a target role helps us give more relevant feedback and
-          keyword suggestions.
-        </p>
+      {/* Target Role */}
+      <div className="flex flex-col gap-2">
+        <label
+          className="text-sm font-medium text-foreground"
+          htmlFor="target-role"
+        >
+          Target Role
+        </label>
+        <div className="relative rounded-md border border-input bg-background focus-within:border-emerald-500/60 focus-within:ring-2 focus-within:ring-emerald-500/20">
+          <Briefcase
+            size={16}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+          />
+          <input
+            id="target-role"
+            type="text"
+            placeholder="e.g. Senior Product Manager"
+            value={targetRole}
+            onChange={(e) => onTargetRoleChange(e.target.value)}
+            className="h-11 w-full bg-transparent pl-9 pr-3 text-sm text-foreground outline-none placeholder:text-muted-foreground"
+          />
+        </div>
       </div>
 
-      {/* Error Message */}
+      {/* Error */}
       {error && (
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-sm text-red-500 bg-red-500/10 rounded-lg px-4 py-2"
+        <MotionP
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-2 rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-400"
         >
+          <AlertCircle size={16} />
           {error}
-        </motion.p>
+        </MotionP>
       )}
 
-      {/* Submit Button */}
-      <Button
+      {/* Submit */}
+      <MotionButton
         onClick={onSubmit}
         disabled={!file || isAnalyzing}
-        className="w-full bg-emerald-500 text-white hover:bg-emerald-600 disabled:opacity-50 h-12 text-base"
+        whileTap={{ scale: 0.98 }}
+        className="h-12 w-full rounded-md bg-emerald-500 text-emerald-950 font-semibold inline-flex items-center justify-center gap-2 hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isAnalyzing ? (
-          <span className="flex items-center gap-2">
-            <Loader2 size={18} className="animate-spin" />
-            Analyzing Resume...
-          </span>
-        ) : (
-          "Analyze Resume"
-        )}
-      </Button>
+        <span>Analyze Resume</span>
+        <ArrowRight size={16} />
+      </MotionButton>
     </div>
   );
 }

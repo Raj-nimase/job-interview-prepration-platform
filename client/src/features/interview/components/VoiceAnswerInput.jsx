@@ -1,5 +1,4 @@
 import { Mic, MicOff, CheckCircle2, Loader2 } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { WaveformVisualizer } from "./WaveformVisualizer";
 import { RecordingTimer } from "./RecordingTimer";
@@ -14,43 +13,53 @@ export function VoiceAnswerInput({
   isLoadingQuestion,
   onToggleRecording,
   onAnswerChange,
+  variant = "default",
 }) {
-  return (
-    <div className="space-y-4">
-      {/* Waveform + status */}
-      <div
-        className={`rounded-xl border-2 p-4 transition-all duration-300 ${
+  const shell =
+    variant === "bento"
+      ? `rounded-2xl border p-4 transition-all duration-300 ${
+          isRecording
+            ? "border-red-500/50 bg-red-500/[0.07]"
+            : isTranscribing
+              ? "border-blue-500/50 bg-blue-500/[0.07]"
+              : "border-border/60 bg-card/60"
+        }`
+      : `rounded-xl border-2 p-4 transition-all duration-300 ${
           isRecording
             ? "border-red-500/60 bg-red-500/5"
             : isTranscribing
               ? "border-blue-500/60 bg-blue-500/5"
               : "border-border bg-muted/50"
-        }`}
-      >
+        }`;
+
+  return (
+    <div className="space-y-4">
+      {/* Waveform + status */}
+      <div className={shell}>
         <WaveformVisualizer isRecording={isRecording} />
 
         <div className="mt-3 flex items-center justify-center gap-2 min-h-[24px]">
           {isRecording && (
             <>
-              <span className="text-red-400 text-sm">Recording…</span>
+              <span className="text-red-400 text-sm">Recording...</span>
               <RecordingTimer isRecording={isRecording} />
             </>
           )}
           {isTranscribing && !isRecording && (
             <span className="flex items-center gap-2 text-blue-400 text-sm">
               <Loader2 className="w-4 h-4 animate-spin" />
-              Transcribing with Gemini…
+              Transcribing...
             </span>
           )}
           {!isRecording && !isTranscribing && !transcript && (
-            <span className="text-gray-500 text-sm">
-              Press the microphone below to start speaking
+            <span className="text-muted-foreground text-sm">
+              Press the microphone to start speaking
             </span>
           )}
           {!isRecording && !isTranscribing && transcript && (
             <span className="flex items-center gap-1.5 text-emerald-400 text-sm">
               <CheckCircle2 className="w-4 h-4" />
-              Transcription complete
+              Ready for feedback
             </span>
           )}
         </div>
@@ -66,6 +75,7 @@ export function VoiceAnswerInput({
               ? "bg-red-500 hover:bg-red-600 scale-110 shadow-red-500/40 shadow-2xl"
               : "bg-emerald-500 hover:bg-emerald-600 hover:scale-105 shadow-emerald-500/30"
           }`}
+          aria-label={isRecording ? "Stop recording" : "Start recording"}
         >
           {isRecording && (
             <>
@@ -77,38 +87,19 @@ export function VoiceAnswerInput({
         </button>
       </div>
 
-      {/* Transcript display */}
+      {/* Editable answer - single field for transcript editing */}
       {(transcript || isTranscribing) && (
-        <div className="bg-muted border border-border rounded-xl p-4">
-          <p className="text-xs text-gray-400 mb-2 font-semibold uppercase tracking-wider">
-            Transcript
-          </p>
-          {isTranscribing && !transcript ? (
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-4/5" />
-            </div>
-          ) : (
-            <p className="text-foreground/80 text-base leading-relaxed">
-              {transcript}
-            </p>
-          )}
-        </div>
-      )}
-
-      {/* Editable transcript */}
-      {transcript && !isTranscribing && (
         <div>
-          <p className="text-xs text-gray-400 mb-1 font-semibold uppercase tracking-wider">
-            Edit if needed
+          <p className="text-xs text-muted-foreground mb-1.5 font-medium uppercase tracking-wider">
+            Your Answer {transcript && !isTranscribing && "(edit if needed)"}
           </p>
           <Textarea
-            value={userAnswer}
+            value={isTranscribing ? "" : userAnswer}
             onChange={(e) => onAnswerChange(e.target.value)}
             rows={4}
-            placeholder="Edit your transcribed answer here…"
+            placeholder={isTranscribing ? "Transcribing your answer..." : "Your transcribed answer will appear here..."}
             className="bg-background border-border text-foreground text-base resize-none"
-            disabled={!!feedback || isLoadingFeedback}
+            disabled={isTranscribing || !!feedback || isLoadingFeedback}
           />
         </div>
       )}

@@ -1,205 +1,103 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Award, Bot, User, Sparkles, RotateCw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { useInterview } from "../hook/useInterview";
+import { SummaryReportHeader } from "../components/SummaryReportHeader";
+import { SummaryOverallScoreCard } from "../components/SummaryOverallScoreCard";
+import { SummaryQuestionBreakdown } from "../components/SummaryQuestionBreakdown";
+import { SummaryInsightsAside } from "../components/SummaryInsightsAside";
+import { averageScoreFromHistory } from "../services/interviewFeedback.helpers";
+import { MAX_QUESTIONS } from "../constants/interview.constants";
 
 export function InterviewSummary() {
   const nav = useNavigate();
   const { history, role, setHistory, setStarted } = useInterview();
 
+  // Mark session inactive once summary is shown (avoids /interview redirect race on End).
+  useEffect(() => {
+    setStarted(false);
+  }, [setStarted]);
+
   const handleNewInterview = () => {
     localStorage.removeItem("sessionId");
     setHistory([]);
     setStarted(false);
-    nav("/");
+    nav("/selectRole");
   };
 
-  if (!history || !role) {
+  if (!role) {
     return (
-      <div className="w-full max-w-4xl space-y-6 p-4">
-        <Skeleton className="h-40 w-full" />
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-24 w-full" />
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="w-full max-w-5xl space-y-6 p-4">
+          <Skeleton className="h-40 w-full rounded-3xl" />
+          <Skeleton className="h-24 w-full rounded-3xl" />
+          <Skeleton className="h-48 w-full rounded-3xl" />
+        </div>
       </div>
     );
   }
 
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-[#0f172a] text-white">
-      <Card className="w-full max-w-4xl bg-white text-gray-900 shadow-xl border border-gray-800 rounded-xl fade-in-up">
-        <CardHeader className="text-center p-8 rounded-t-xl">
-          <div className="mx-auto bg-primary text-primary-foreground rounded-full p-4 w-fit mb-4 shadow-lg">
-            <Award size={40} />
-          </div>
-          <CardTitle className="text-4xl font-extrabold tracking-tight">
-            Interview Complete!
-          </CardTitle>
-          <CardDescription className="text-xl text-muted-foreground pt-2">
-            Here's your performance summary for the{" "}
-            <span className="font-semibold text-primary">{role}</span> role.
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent className="p-8">
-          {history.length > 0 ? (
-            <Accordion
-              type="single"
-              collapsible
-              className="w-full space-y-4"
-              defaultValue="item-0"
-            >
-              {history.map((turn, index) => {
-                const feedbackText =
-                  typeof turn.feedback === "string"
-                    ? turn.feedback
-                    : turn.feedback?.feedback || "";
-
-                const feedbackScore =
-                  typeof turn.feedback === "object"
-                    ? turn.feedback?.score
-                    : null;
-
-                const strengths =
-                  typeof turn.feedback === "object"
-                    ? turn.feedback?.strengths || []
-                    : [];
-
-                const weaknesses =
-                  typeof turn.feedback === "object"
-                    ? turn.feedback?.weaknesses || []
-                    : [];
-
-                const suggestions =
-                  typeof turn.feedback === "object"
-                    ? turn.feedback?.suggestions || []
-                    : [];
-
-                return (
-                  <AccordionItem
-                    value={`item-${index}`}
-                    key={index}
-                    className="border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-all"
-                  >
-                    <AccordionTrigger className="text-xl font-semibold p-6 hover:no-underline">
-                      <div className="flex items-center gap-4">
-                        <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold">
-                          {index + 1}
-                        </span>
-                        <span className="text-left">Question {index + 1}</span>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="space-y-6 p-6 pt-2">
-                      <div className="space-y-3">
-                        <h4 className="font-semibold flex items-center gap-3 text-lg">
-                          <Bot className="text-primary" />
-                          Question Asked
-                        </h4>
-                        <p className="pl-10 text-gray-600 text-base">
-                          {turn.question}
-                        </p>
-                      </div>
-
-                      <div className="space-y-3">
-                        <h4 className="font-semibold flex items-center gap-3 text-lg">
-                          <User />
-                          Your Answer
-                        </h4>
-                        <blockquote className="pl-10 text-gray-700 border-l-4 border-emerald-400 bg-emerald-50 ml-2 py-3 px-4 rounded text-base italic">
-                          "{turn.answer}"
-                        </blockquote>
-                      </div>
-
-                      <div className="space-y-3">
-                        <h4 className="font-semibold flex items-center gap-3 text-lg">
-                          <Sparkles className="text-accent" />
-                          AI Feedback
-                        </h4>
-
-                        {feedbackScore !== null && (
-                          <p className="pl-10 text-gray-800">
-                            <strong>Score:</strong> {feedbackScore}
-                          </p>
-                        )}
-
-                        <div
-                          className="pl-10 text-foreground/90 prose prose-base max-w-none"
-                          dangerouslySetInnerHTML={{
-                            __html: feedbackText.replace(/\n/g, "<br />"),
-                          }}
-                        />
-
-                        {strengths.length > 0 && (
-                          <div className="pl-10">
-                            <h5 className="font-semibold">Strengths:</h5>
-                            <ul className="list-disc list-inside">
-                              {strengths.map((s, i) => (
-                                <li key={i}>{s}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-
-                        {weaknesses.length > 0 && (
-                          <div className="pl-10">
-                            <h5 className="font-semibold">Weaknesses:</h5>
-                            <ul className="list-disc list-inside">
-                              {weaknesses.map((w, i) => (
-                                <li key={i}>{w}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-
-                        {suggestions.length > 0 && (
-                          <div className="pl-10">
-                            <h5 className="font-semibold">Suggestions:</h5>
-                            <ul className="list-disc list-inside">
-                              {suggestions.map((s, i) => (
-                                <li key={i}>{s}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                );
-              })}
-            </Accordion>
-          ) : (
-            <p className="text-center text-muted-foreground py-10 text-lg">
-              You didn't answer any questions. Try another interview to see your
-              summary here.
-            </p>
-          )}
-        </CardContent>
-
-        <CardFooter className="p-8 border-t">
+  if (!history || history.length === 0) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="max-w-md text-center space-y-4">
+          <h1 className="text-2xl font-bold font-headline text-foreground">
+            No answers recorded
+          </h1>
+          <p className="text-muted-foreground">
+            This session ended before any answer was saved. Start a new interview
+            to practice.
+          </p>
           <Button
             onClick={handleNewInterview}
-            className="w-full h-14 text-xl bg-emerald-500 hover:bg-emerald-600 text-white"
+            className="rounded-full bg-emerald-600 hover:bg-emerald-700"
           >
-            <RotateCw className="mr-3 h-6 w-6" />
-            Start a New Interview
+            Start new interview
           </Button>
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
+    );
+  }
+
+  const averageScore = averageScoreFromHistory(history);
+  const endedEarly = history.length < MAX_QUESTIONS;
+  const overviewText =
+    averageScore != null
+      ? endedEarly
+        ? `You ended the session early after ${history.length} answered question${history.length === 1 ? "" : "s"}. Your average score across scored answers is ${averageScore}/10. Review the breakdown below.`
+        : `You completed ${history.length} questions with an average score of ${averageScore}/10. Use the breakdown below to spot patterns and tighten your narrative for the real interview.`
+      : endedEarly
+        ? `You ended the session early after ${history.length} answered question${history.length === 1 ? "" : "s"}. Review each prompt and your answers below—scores appear when the API returns a numeric rating.`
+        : `You completed ${history.length} questions. Review each prompt, your answers, and the AI narrative below—scores appear when the API returns a numeric rating.`;
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <main
+        className="max-w-[80vw] mx-auto p-6 md:p-10 lg:p-16"
+      >
+        <header className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12 md:mb-4 items-start">
+          <SummaryReportHeader
+            className="lg:col-span-8"
+            role={role}
+            overviewText={overviewText}
+          />
+          <SummaryOverallScoreCard
+            averageScore={averageScore}
+            questionCount={history.length}
+          />
+        </header>
+
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 xl:gap-12">
+          <SummaryQuestionBreakdown history={history} />
+          <SummaryInsightsAside
+            averageScore={averageScore}
+            questionCount={history.length}
+            onNewInterview={handleNewInterview}
+          />
+        </div>
+      </main>
+
     </div>
   );
 }

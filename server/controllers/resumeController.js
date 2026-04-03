@@ -20,11 +20,21 @@ export const analyzeResume = async (req, res) => {
     }
 
     // Parse PDF to text using pdf-parse
-    const parser = new PDFParse({ data: file.buffer });
-    await parser.load();
-    const textResult = await parser.getText();
-    await parser.destroy();
-    const resumeText = textResult.text;
+    let resumeText = "";
+    try {
+      const parser = new PDFParse({ data: file.buffer });
+      try {
+        const parsed = await parser.getText();
+        resumeText = parsed.text || "";
+      } finally {
+        await parser.destroy();
+      }
+    } catch (parseErr) {
+      return res.status(400).json({
+        error:
+          "Could not read the PDF file. Please ensure it is a valid, text-based PDF.",
+      });
+    }
 
     if (!resumeText || resumeText.trim().length < 50) {
       return res.status(400).json({
@@ -45,13 +55,13 @@ ${resumeText}
 """
 
 Evaluate the resume on these criteria:
-1. **Overall Quality** — How effective is this resume overall?
-2. **ATS Compatibility** — How well would this pass Applicant Tracking Systems?
-3. **Contact Information** — Is contact info complete and professional?
-4. **Experience** — How well are work experiences described? Action verbs, quantified achievements?
-5. **Education** — Is education section properly formatted and relevant?
-6. **Skills** — Are relevant skills listed? Any critical missing skills for the target role?
-7. **Formatting** — Is the resume well-structured, concise, and easy to read?
+1. **Overall Quality** — How effective is this resume overall? (score out of 100)
+2. **ATS Compatibility** — How well would this pass Applicant Tracking Systems? (score out of 100)
+3. **Contact Information** — Is contact info complete and professional? (score out of 10)
+4. **Experience** — How well are work experiences described? Action verbs, quantified achievements? (score out of 10)
+5. **Education** — Is education section properly formatted and relevant? (score out of 10)
+6. **Skills** — Are relevant skills listed? (score out of 10)
+7. **Formatting** — Is the resume well-structured, concise, and easy to read? (score out of 10)
 8. **Keywords** — What relevant keywords are present and which important ones are missing?
 
 Return ONLY valid JSON — no markdown fences, no extra text:
@@ -99,13 +109,18 @@ Return ONLY valid JSON — no markdown fences, no extra text:
         userId,
         fileName: file.originalname,
         targetRole: targetRole || "",
+        resumeText: resumeText,
         ...data,
       });
       await analysis.save();
-      return res.json({ ...data, analysisId: analysis._id });
+      return res.json({
+        ...data,
+        analysisId: analysis._id,
+        resumeText: resumeText,
+      });
     }
 
-    res.json(data);
+    res.json({ ...data, resumeText: resumeText });
   } catch (err) {
     console.error("Resume analysis error:", err?.message ?? err);
     res.status(500).json({

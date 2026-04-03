@@ -1,19 +1,18 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import { XCircle, ArrowRight } from "lucide-react";
+import { XCircle } from "lucide-react";
 
-import { useInterview, MAX_QUESTIONS } from "../hook/useInterview";
-import { PreInterviewTips } from "../components/PreInterviewTips";
+import { useInterview } from "../hook/useInterview";
 import { QuestionCard } from "../components/QuestionCard";
 import { AnswerCard } from "../components/AnswerCard";
-import { FeedbackCard } from "../components/FeedbackCard";
+import { WorkspaceSessionHeader } from "../components/WorkspaceSessionHeader";
+import { QuestionFeedbackPanel } from "../components/QuestionFeedbackPanel";
 
 export function InterviewWorkspace() {
   const nav = useNavigate();
+  const location = useLocation();
   const {
     role,
     question,
@@ -34,15 +33,26 @@ export function InterviewWorkspace() {
     toggleRecording,
     endInterview,
     handleNextQuestion,
-    beginInterview,
   } = useInterview();
 
-  // Redirect if no role selected
+  const feedbackPhase = isLoadingFeedback || !!feedback;
+
   useEffect(() => {
-    if (!role && !localStorage.getItem("interviewRole")) nav("/");
+    if (!role && !localStorage.getItem("interviewRole")) {
+      nav("/selectRole");
+    }
   }, [role, nav]);
 
-  // Unlock AudioContext on first click (required by some browsers)
+  // Only when actually on /interview: if session never started, send to setup.
+  // Must be an effect — not render-time nav — and must NOT run after endInterview
+  // (that leaves started true until Summary mounts; see useInterview.endInterview).
+  useEffect(() => {
+    if (location.pathname !== "/interview") return;
+    if (!started) {
+      nav("/selectRole", { replace: true });
+    }
+  }, [started, location.pathname, nav]);
+
   useEffect(() => {
     const unlock = () => {
       new Audio().play().catch(() => {});
@@ -52,10 +62,9 @@ export function InterviewWorkspace() {
     return () => document.removeEventListener("click", unlock);
   }, []);
 
-  // Loading skeleton while role resolves
   if (!role) {
     return (
-      <main className="flex items-center justify-center min-h-screen">
+      <main className="flex items-center justify-center min-h-screen bg-background">
         <div className="w-full max-w-4xl space-y-8 p-4">
           <Skeleton className="h-24 w-full" />
           <Skeleton className="h-48 w-full" />
@@ -65,78 +74,65 @@ export function InterviewWorkspace() {
     );
   }
 
-  // Pre-interview tips screen
   if (!started) {
-    return <PreInterviewTips onStart={beginInterview} />;
+    return null;
   }
 
-  // Live interview screen
   return (
-    <main className="min-h-screen  flex flex-col items-center p-4 sm:p-6 lg:mt-12">
-      <div className="w-full max-w-4xl space-y-6">
-        <header className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-          <h1 className="text-3xl font-bold tracking-tight">
-            Interview for <span className="text-emerald-400">{role}</span>
-          </h1>
-          <Badge
-            variant="outline"
-            className="text-md py-2  px-4 w-fit border-2"
-          >
-            Question {Math.min(history.length + 1, MAX_QUESTIONS)} of{" "}
-            {MAX_QUESTIONS}
-          </Badge>
-        </header>
+    <main className="min-h-screen w-screen bg-background text-foreground py-10 px-4 sm:px-8 lg:px-12">
+      <div className="max-w-[80vw] mx-auto w-full">
+        <WorkspaceSessionHeader answeredCount={history.length} role={role} />
 
-        <Progress
-          value={(history.length / MAX_QUESTIONS) * 100}
-          className="w-full h-2 rounded-full bg-white/10"
-        />
+        {!feedbackPhase && (
+          <>
+            <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-3 mb-6">
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={() => endInterview()}
+                className="rounded-full h-11 px-6 w-full sm:w-auto"
+              >
+                <XCircle className="w-5 h-5 mr-2" />
+                End interview
+              </Button>
+            </div>
+            <QuestionCard
+              question={question}
+              isLoading={isLoadingQuestion}
+              onPlayTTS={playTTS}
+              role={role}
+            />
+            <AnswerCard
+              voiceMode={voiceMode}
+              onVoiceModeChange={setVoiceMode}
+              userAnswer={userAnswer}
+              onAnswerChange={setUserAnswer}
+              feedback={feedback}
+              isLoadingFeedback={isLoadingFeedback}
+              isLoadingQuestion={isLoadingQuestion}
+              isRecording={isRecording}
+              isTranscribing={isTranscribing}
+              transcript={transcript}
+              onToggleRecording={toggleRecording}
+              onSubmitFeedback={submitFeedback}
+            />
+          </>
+        )}
 
-        <QuestionCard
-          question={question}
-          isLoading={isLoadingQuestion}
-          onPlayTTS={playTTS}
-        />
-
-        <AnswerCard
-          voiceMode={voiceMode}
-          onVoiceModeChange={setVoiceMode}
-          userAnswer={userAnswer}
-          onAnswerChange={setUserAnswer}
-          feedback={feedback}
-          isLoadingFeedback={isLoadingFeedback}
-          isLoadingQuestion={isLoadingQuestion}
-          isRecording={isRecording}
-          isTranscribing={isTranscribing}
-          transcript={transcript}
-          onToggleRecording={toggleRecording}
-          onSubmitFeedback={submitFeedback}
-        />
-
-        <FeedbackCard feedback={feedback} isLoading={isLoadingFeedback} />
-
-        <div className="flex justify-between items-center pt-4">
-          <Button
-            variant="destructive"
-            onClick={() => endInterview()}
-            className="h-12 px-6 text-base cursor-pointer"
-          >
-            <XCircle className="mr-2 h-5 w-5" />
-            End Interview
-          </Button>
-
-          {!isLoadingQuestion && !isLoadingFeedback && !!question && (
-            <Button
-              onClick={handleNextQuestion}
-              className="h-12 px-6 text-base bg-emerald-600 hover:bg-emerald-700 cursor-pointer"
-            >
-              {history.length + 1 >= MAX_QUESTIONS
-                ? "Finish & See Summary"
-                : "Next Question"}
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          )}
-        </div>
+        {feedbackPhase && (
+          <QuestionFeedbackPanel
+            feedback={feedback}
+            isLoading={isLoadingFeedback}
+            question={question}
+            userAnswer={userAnswer || transcript}
+            answeredCount={history.length}
+            role={role}
+            onPlayQuestionTTS={playTTS}
+            onNextQuestion={handleNextQuestion}
+            onEndInterview={() => endInterview()}
+            canGoNext={!isLoadingFeedback && !!feedback}
+          />
+        )}
       </div>
     </main>
   );

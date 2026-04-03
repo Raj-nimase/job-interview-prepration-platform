@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Subtle SaaS - Analysis Report</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#10b748",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#121414",
+                        "surface": "#1A1D1D",
+                        "surface-elevated": "#242828",
+                        "muted": "#8C9C96",
+                        "text-primary": "#E8F0ED"
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #121414;
+            color: #E8F0ED;
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+        }
+        .inner-border-subtle {
+            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+        }
+        .data-table-row:not(:last-child) {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+<div class="relative flex min-h-screen w-full flex-col bg-background-dark overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<main class="mx-auto w-full max-w-[786px] flex flex-col gap-6 px-4 py-8">
+<!-- Header -->
+<div class="flex items-center justify-between mb-2">
+<button class="flex items-center gap-2 text-muted hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-base">arrow_back</span>
+<span class="text-[11px] font-bold uppercase tracking-wider">Back to Dashboard</span>
+</button>
+<div class="flex items-center gap-2">
+<div class="size-5 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M12.0799 24L4 19.2479L9.95537 8.75216L18.04 13.4961L18.0446 4H29.9554L29.96 13.4961L38.0446 8.75216L44 19.2479L35.92 24L44 28.7521L38.0446 39.2479L29.96 34.5039L29.9554 44H18.0446L18.04 34.5039L9.95537 39.2479L4 28.7521L12.0799 24Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<span class="text-xs font-bold text-text-primary uppercase tracking-widest">Subtle SaaS</span>
+</div>
+</div>
+<!-- Page Title & Metadata -->
+<div class="flex flex-col md:flex-row md:items-end justify-between border-b border-white/10 pb-6 gap-4">
+<div>
+<h1 class="text-2xl font-black text-text-primary tracking-tight">Full Analysis Report</h1>
+<div class="flex gap-4 mt-2">
+<p class="text-[11px] font-bold text-muted uppercase tracking-wider">Role: <span class="text-primary">Product Manager</span></p>
+<p class="text-[11px] font-bold text-muted uppercase tracking-wider">Ref ID: <span class="text-text-primary">PM-842-X</span></p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[11px] font-bold text-muted uppercase tracking-wider">Last Scan: <span class="text-text-primary">Oct 24, 2023</span></p>
+</div>
+</div>
+<!-- Executive Summary Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<section class="bg-surface rounded border border-white/5 inner-border-subtle p-5">
+<div class="flex justify-between items-start mb-4">
+<h3 class="text-[11px] font-black text-muted uppercase tracking-[0.2em]">Overall Assessment</h3>
+<span class="bg-primary/10 text-primary px-2 py-0.5 rounded text-[11px] font-bold">READY</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-5xl font-black text-text-primary tracking-tighter">84</span>
+<span class="text-lg font-bold text-muted">/100</span>
+</div>
+<p class="text-xs text-muted mt-3 leading-relaxed">Candidate profile shows high alignment with senior product roles. Quantitative impact is well-documented, though keyword density for ATS optimization remains a minor bottleneck.</p>
+</section>
+<section class="bg-surface rounded border border-white/5 inner-border-subtle p-5">
+<div class="flex justify-between items-start mb-4">
+<h3 class="text-[11px] font-black text-muted uppercase tracking-[0.2em]">ATS Match Probability</h3>
+<span class="bg-yellow-500/10 text-yellow-500 px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-tight">Requires Polish</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-5xl font-black text-text-primary tracking-tighter">78</span>
+<span class="text-lg font-bold text-muted">%</span>
+</div>
+<p class="text-xs text-muted mt-3 leading-relaxed">The parser identified 14 out of 18 critical skill-nodes. Integration of "Stakeholder Management" and "Agile CRM" within experience bullets is recommended.</p>
+</section>
+</div>
+<!-- Detailed Section Breakdown -->
+<div class="flex flex-col gap-4">
+<h2 class="text-xs font-black text-muted uppercase tracking-[0.2em] border-l-2 border-primary pl-3 ml-1">Section Parameters</h2>
+<div class="bg-surface rounded border border-white/5 inner-border-subtle overflow-hidden">
+<div class="grid grid-cols-12 bg-white/5 px-5 py-3 border-b border-white/5">
+<div class="col-span-4 text-[10px] font-bold text-muted uppercase tracking-wider">Parameter</div>
+<div class="col-span-6 text-[10px] font-bold text-muted uppercase tracking-wider">Status &amp; Insights</div>
+<div class="col-span-2 text-right text-[10px] font-bold text-muted uppercase tracking-wider">Index</div>
+</div>
+<div class="data-table-row grid grid-cols-12 px-5 py-4 items-center">
+<div class="col-span-4">
+<p class="text-xs font-bold text-text-primary">Professional Experience</p>
+<p class="text-[10px] text-muted">Action verb density &amp; metrics</p>
+</div>
+<div class="col-span-6">
+<ul class="flex flex-col gap-1">
+<li class="flex items-center gap-2 text-[11px] text-muted">
+<span class="size-1 rounded-full bg-primary"></span>
+                                    Strong use of "Led", "Scaled", "Optimized"
+                                </li>
+<li class="flex items-center gap-2 text-[11px] text-muted">
+<span class="size-1 rounded-full bg-primary"></span>
+                                    $2M+ revenue impact clearly cited
+                                </li>
+</ul>
+</div>
+<div class="col-span-2 text-right">
+<span class="text-primary font-bold text-sm">92.0</span>
+</div>
+</div>
+<div class="data-table-row grid grid-cols-12 px-5 py-4 items-center">
+<div class="col-span-4">
+<p class="text-xs font-bold text-text-primary">Education Alignment</p>
+<p class="text-[10px] text-muted">Degree &amp; Certification validation</p>
+</div>
+<div class="col-span-6 text-[11px] text-muted">
+<p>CS degree and MBA alignment confirmed. Minor gap in missing "Product Management" specific certifications.</p>
+</div>
+<div class="col-span-2 text-right">
+<span class="text-primary font-bold text-sm">85.0</span>
+</div>
+</div>
+<div class="data-table-row grid grid-cols-12 px-5 py-4 items-center bg-red-500/[0.02]">
+<div class="col-span-4">
+<p class="text-xs font-bold text-text-primary">Parsing &amp; Formatting</p>
+<p class="text-[10px] text-muted">Machine readability status</p>
+</div>
+<div class="col-span-6">
+<p class="text-[11px] text-yellow-500/80 italic font-medium">Scanning issues detected in header contact block. Complex table structure found on page 2 may hinder parsing.</p>
+</div>
+<div class="col-span-2 text-right">
+<span class="text-yellow-500 font-bold text-sm">70.0</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Lower Detail Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Critical Findings (Replaced Strengths) -->
+<div>
+<h2 class="text-xs font-black text-muted uppercase tracking-[0.2em] mb-4">Critical Strengths</h2>
+<div class="flex flex-col gap-2">
+<div class="flex gap-3 p-4 bg-surface border border-white/5 rounded">
+<span class="material-symbols-outlined text-primary text-lg shrink-0">check_circle</span>
+<div>
+<p class="text-xs font-bold text-text-primary">High Quantitative Density</p>
+<p class="text-[11px] text-muted mt-1">Experience bullets contain 4.2 metrics per 100 words, exceeding industry average of 2.1.</p>
+</div>
+</div>
+<div class="flex gap-3 p-4 bg-surface border border-white/5 rounded">
+<span class="material-symbols-outlined text-primary text-lg shrink-0">check_circle</span>
+<div>
+<p class="text-xs font-bold text-text-primary">Strategic Progression</p>
+<p class="text-[11px] text-muted mt-1">Linear progression from Associate to Senior levels clearly demonstrated via responsibilities.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Keyword Inventory -->
+<div>
+<h2 class="text-xs font-black text-muted uppercase tracking-[0.2em] mb-4">Keyword Analysis</h2>
+<div class="bg-surface p-5 border border-white/5 rounded">
+<div class="mb-4">
+<p class="text-[10px] font-bold text-muted uppercase tracking-wider mb-2">High Presence</p>
+<div class="flex flex-wrap gap-1.5">
+<span class="bg-surface-elevated text-primary text-[10px] font-bold px-2 py-1 rounded border border-primary/20">SQL</span>
+<span class="bg-surface-elevated text-primary text-[10px] font-bold px-2 py-1 rounded border border-primary/20">KPIs</span>
+<span class="bg-surface-elevated text-primary text-[10px] font-bold px-2 py-1 rounded border border-primary/20">ROADMAPPING</span>
+</div>
+</div>
+<div>
+<p class="text-[10px] font-bold text-muted uppercase tracking-wider mb-2">Missing / Targeted</p>
+<div class="flex flex-wrap gap-1.5">
+<span class="bg-white/5 text-muted text-[10px] font-bold px-2 py-1 rounded border border-white/5">AGILE CRM</span>
+<span class="bg-white/5 text-muted text-[10px] font-bold px-2 py-1 rounded border border-white/5">STAKEHOLDERS</span>
+<span class="bg-white/5 text-muted text-[10px] font-bold px-2 py-1 rounded border border-white/5">GO-TO-MARKET</span>
+</div>
+</div>
+<button class="mt-6 w-full text-[10px] font-black text-muted hover:text-primary transition-colors flex items-center justify-center gap-1 uppercase tracking-widest border border-white/10 py-2 rounded">
+                            Download Action Plan
+                            <span class="material-symbols-outlined text-sm">keyboard_arrow_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Footer CTA -->
+<div class="mt-4 pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-[11px] text-muted">Generated by <span class="font-bold">Subtle SaaS Analysis Engine v2.4</span></p>
+<div class="flex gap-3">
+<button class="bg-surface-elevated text-text-primary font-bold px-6 py-3 rounded text-xs border border-white/10 hover:bg-white/5 transition-all flex items-center gap-2">
+                        Print View
+                    </button>
+<button class="bg-primary text-background-dark font-black px-8 py-3 rounded text-xs hover:brightness-110 transition-all shadow-lg flex items-center gap-2 uppercase tracking-wider">
+                        Export PDF Report
+                        <span class="material-symbols-outlined text-sm">download</span>
+</button>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

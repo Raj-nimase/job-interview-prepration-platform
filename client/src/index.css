@@ -211,8 +211,15 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+  }
   body {
     @apply bg-background text-foreground;
+  }
+  .font-headline {
+    font-family: "Manrope", "Inter", ui-sans-serif, system-ui, sans-serif;
   }
 }
 
@@ -265,6 +272,10 @@
     padding: 0 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+  /* Reuse across app (also used in some Stitch exports) */
+  .no-print {
+    display: none !important;
   }
   /* Remove scroll area constraints when printing */
   [data-slot="scroll-area"] {

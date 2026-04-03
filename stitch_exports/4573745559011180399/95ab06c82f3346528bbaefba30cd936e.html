@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Subtle SaaS - Analysis Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@700,600,500,400&amp;f[]=satoshi@900,700,500,400,300&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#34d399",
+                        "primary-dark": "#059669",
+                        "background-dark": "#0a0c0c",
+                        "surface": "rgba(26, 29, 29, 0.4)",
+                        "surface-elevated": "rgba(36, 40, 40, 0.6)",
+                        "muted": "#94a3b8",
+                        "text-primary": "#f8fafc"
+                    },
+                    fontFamily: {
+                        "display": ["General Sans", "Inter", "sans-serif"],
+                        "body": ["Satoshi", "Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "lg": "1.25rem",
+                        "xl": "2rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #0a0c0c;
+            color: #f8fafc;
+            font-family: 'Satoshi', sans-serif;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(52, 211, 153, 0.03) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(52, 211, 153, 0.03) 0%, transparent 40%);
+            -webkit-font-smoothing: antialiased;
+            overflow: hidden;
+        }
+        h1, h2, h3, h4, .font-display {
+            font-family: 'General Sans', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .tight-heading {
+            letter-spacing: -0.04em;
+        }
+        .tracking-ultra {
+            letter-spacing: 0.15em;
+        }
+        .pill-shadow {
+            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1), 0 4px 12px -2px rgba(0, 0, 0, 0.3);
+        }
+        /* Dashboard specific constraints */
+        .dashboard-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body class="h-screen overflow-hidden">
+<div class="dashboard-container p-4 lg:p-6 gap-4">
+<!-- Header -->
+<header class="flex items-center justify-between shrink-0">
+<div class="flex items-center gap-6">
+<button class="group flex items-center gap-2 text-muted hover:text-primary transition-all duration-300">
+<span class="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">arrow_back</span>
+<span class="text-[9px] font-bold uppercase tracking-ultra">Dashboard</span>
+</button>
+<div class="h-4 w-[1px] bg-white/10"></div>
+<div>
+<h1 class="text-xl font-bold text-text-primary tight-heading">Full Analysis Report</h1>
+<div class="flex gap-4 items-center mt-0.5">
+<span class="text-[9px] font-bold text-primary uppercase tracking-ultra">Senior Product Manager</span>
+<span class="text-[9px] font-bold text-muted/50 uppercase tracking-ultra">PM-842-X</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right">
+<span class="text-[9px] font-bold text-muted uppercase tracking-ultra block">Conducted</span>
+<span class="text-[11px] font-bold text-text-primary">Oct 24, 2023</span>
+</div>
+<div class="flex items-center gap-2 border-l border-white/10 pl-8">
+<div class="size-4 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M12.0799 24L4 19.2479L9.95537 8.75216L18.04 13.4961L18.0446 4H29.9554L29.96 13.4961L38.0446 8.75216L44 19.2479L35.92 24L44 28.7521L38.0446 39.2479L29.96 34.5039L29.9554 44H18.0446L18.04 34.5039L9.95537 39.2479L4 28.7521L12.0799 24Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<span class="text-[10px] font-black text-text-primary uppercase tracking-[0.25em] font-display">Subtle SaaS</span>
+</div>
+</div>
+</header>
+<!-- Main Dashboard Content -->
+<main class="grid grid-cols-12 gap-4 grow min-h-0">
+<!-- Left Column: Hero Scores & Summary (25%) -->
+<div class="col-span-3 flex flex-col gap-4 min-h-0">
+<section class="glass-card rounded-xl p-5 flex flex-col justify-between grow">
+<div>
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-[9px] font-bold text-muted uppercase tracking-ultra font-display">Overall Assessment</h3>
+<span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-[8px] font-black border border-primary/20 uppercase">Ready</span>
+</div>
+<div class="flex items-baseline gap-1 mb-2">
+<span class="text-5xl font-bold text-text-primary tracking-tighter font-display">84</span>
+<span class="text-base font-medium text-muted">/100</span>
+</div>
+<p class="text-[11px] text-muted leading-relaxed font-medium">Profile shows high alignment. Quantitative impact is well-documented, keyword density is the main bottleneck.</p>
+</div>
+</section>
+<section class="glass-card rounded-xl p-5 flex flex-col justify-between grow">
+<div>
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-[9px] font-bold text-muted uppercase tracking-ultra font-display">ATS Match Probability</h3>
+<span class="bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-full text-[8px] font-black border border-amber-500/20 uppercase">Polishing</span>
+</div>
+<div class="flex items-baseline gap-1 mb-2">
+<span class="text-5xl font-bold text-text-primary tracking-tighter font-display">78</span>
+<span class="text-base font-medium text-muted">%</span>
+</div>
+<p class="text-[11px] text-muted leading-relaxed font-medium">14/18 skill-nodes identified. Integration required for <span class="text-text-primary">"Stakeholder Management"</span>.</p>
+</div>
+</section>
+<div class="glass-card rounded-xl p-4 bg-white/[0.01]">
+<h3 class="text-[9px] font-bold text-muted uppercase tracking-ultra mb-2">Quick Recommendation</h3>
+<p class="text-[11px] text-primary/80 font-bold leading-snug italic">Focus on "Agile CRM" keywords to hit 90%+ match rate.</p>
+</div>
+</div>
+<!-- Middle Column: Section Parameters (50%) -->
+<div class="col-span-6 flex flex-col gap-4 min-h-0">
+<section class="glass-card rounded-xl flex flex-col grow overflow-hidden">
+<div class="px-5 py-3 border-b border-white/5 bg-white/[0.02] flex justify-between items-center">
+<h2 class="text-[9px] font-bold text-muted uppercase tracking-ultra font-display">Section Parameters</h2>
+<span class="text-[9px] font-bold text-muted/40 uppercase tracking-ultra">Automated Scan</span>
+</div>
+<div class="flex-1 overflow-y-auto">
+<!-- Table Row 1 -->
+<div class="px-5 py-4 border-b border-white/5 hover:bg-white/[0.01] transition-colors">
+<div class="flex justify-between items-start mb-2">
+<div>
+<p class="text-[12px] font-bold text-text-primary">Professional Experience</p>
+<p class="text-[10px] text-muted font-medium">Action verb density &amp; metrics</p>
+</div>
+<div class="text-right">
+<span class="text-primary font-bold text-sm tracking-tight font-display">92.0</span>
+</div>
+</div>
+<div class="w-full bg-white/5 h-1 rounded-full overflow-hidden mb-3">
+<div class="bg-primary h-full" style="width: 92%"></div>
+</div>
+<ul class="flex flex-wrap gap-x-4 gap-y-1">
+<li class="flex items-center gap-1.5 text-[10px] text-muted/80 font-medium">
+<span class="size-1 rounded-full bg-primary/60"></span> Led, Scaled, Optimized
+                                </li>
+<li class="flex items-center gap-1.5 text-[10px] text-muted/80 font-medium">
+<span class="size-1 rounded-full bg-primary/60"></span> $2M+ revenue impact
+                                </li>
+</ul>
+</div>
+<!-- Table Row 2 -->
+<div class="px-5 py-4 border-b border-white/5 hover:bg-white/[0.01] transition-colors">
+<div class="flex justify-between items-start mb-2">
+<div>
+<p class="text-[12px] font-bold text-text-primary">Education Alignment</p>
+<p class="text-[10px] text-muted font-medium">Degree &amp; validation</p>
+</div>
+<div class="text-right">
+<span class="text-primary font-bold text-sm tracking-tight font-display">85.0</span>
+</div>
+</div>
+<div class="w-full bg-white/5 h-1 rounded-full overflow-hidden mb-3">
+<div class="bg-primary h-full" style="width: 85%"></div>
+</div>
+<p class="text-[10px] text-muted/80 leading-relaxed font-medium">CS degree and MBA alignment confirmed. Missing PM certifications.</p>
+</div>
+<!-- Table Row 3 -->
+<div class="px-5 py-4 border-b border-white/5 hover:bg-white/[0.01] transition-colors">
+<div class="flex justify-between items-start mb-2">
+<div>
+<p class="text-[12px] font-bold text-text-primary">Parsing &amp; Formatting</p>
+<p class="text-[10px] text-muted font-medium">Machine readability</p>
+</div>
+<div class="text-right">
+<span class="text-amber-400 font-bold text-sm tracking-tight font-display">70.0</span>
+</div>
+</div>
+<div class="w-full bg-white/5 h-1 rounded-full overflow-hidden mb-3">
+<div class="bg-amber-400/60 h-full" style="width: 70%"></div>
+</div>
+<p class="text-[10px] text-amber-400/60 italic font-bold">Scanning issues in header contact block. Complex tables detected.</p>
+</div>
+<!-- Table Row 4 (Filler for Dashboard UI density) -->
+<div class="px-5 py-4 hover:bg-white/[0.01] transition-colors">
+<div class="flex justify-between items-start mb-2">
+<div>
+<p class="text-[12px] font-bold text-text-primary">Soft Skill Extraction</p>
+<p class="text-[10px] text-muted font-medium">Leadership &amp; Collaboration</p>
+</div>
+<div class="text-right">
+<span class="text-primary font-bold text-sm tracking-tight font-display">88.0</span>
+</div>
+</div>
+<div class="w-full bg-white/5 h-1 rounded-full overflow-hidden mb-3">
+<div class="bg-primary h-full" style="width: 88%"></div>
+</div>
+<p class="text-[10px] text-muted/80 leading-relaxed font-medium">Strong indicators for stakeholder management and cross-functional leadership.</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Strengths & Keywords (25%) -->
+<div class="col-span-3 flex flex-col gap-4 min-h-0">
+<section class="flex flex-col gap-3 shrink-0">
+<h2 class="text-[9px] font-bold text-muted uppercase tracking-ultra font-display">Critical Strengths</h2>
+<div class="flex flex-col gap-2">
+<div class="flex gap-3 p-3 glass-card rounded-xl bg-white/[0.01]">
+<span class="material-symbols-outlined text-primary text-base shrink-0">verified</span>
+<div>
+<p class="text-[11px] font-bold text-text-primary">High Quantitative Density</p>
+<p class="text-[9px] text-muted mt-0.5 leading-normal">4.2 metrics per 100 words.</p>
+</div>
+</div>
+<div class="flex gap-3 p-3 glass-card rounded-xl bg-white/[0.01]">
+<span class="material-symbols-outlined text-primary text-base shrink-0">trending_up</span>
+<div>
+<p class="text-[11px] font-bold text-text-primary">Strategic Progression</p>
+<p class="text-[9px] text-muted mt-0.5 leading-normal">Clear Associate to Senior growth.</p>
+</div>
+</div>
+</div>
+</section>
+<section class="glass-card p-5 rounded-xl grow flex flex-col justify-between">
+<div class="space-y-5">
+<h2 class="text-[9px] font-bold text-muted uppercase tracking-ultra font-display">Keyword Analysis</h2>
+<div>
+<p class="text-[8px] font-bold text-muted uppercase tracking-widest mb-2">High Presence</p>
+<div class="flex flex-wrap gap-1.5">
+<span class="bg-primary/5 text-primary text-[9px] font-bold px-2 py-0.5 rounded border border-primary/20">SQL</span>
+<span class="bg-primary/5 text-primary text-[9px] font-bold px-2 py-0.5 rounded border border-primary/20">KPIs</span>
+<span class="bg-primary/5 text-primary text-[9px] font-bold px-2 py-0.5 rounded border border-primary/20">ROADMAP</span>
+</div>
+</div>
+<div>
+<p class="text-[8px] font-bold text-muted uppercase tracking-widest mb-2">Targeted Gaps</p>
+<div class="flex flex-wrap gap-1.5">
+<span class="bg-white/5 text-muted text-[9px] font-bold px-2 py-0.5 rounded border border-white/5">AGILE CRM</span>
+<span class="bg-white/5 text-muted text-[9px] font-bold px-2 py-0.5 rounded border border-white/5">STAKEHOLDERS</span>
+<span class="bg-white/5 text-muted text-[9px] font-bold px-2 py-0.5 rounded border border-white/5">GTM</span>
+</div>
+</div>
+</div>
+<button class="mt-4 w-full text-[9px] font-bold text-muted hover:text-primary transition-all duration-300 flex items-center justify-center gap-2 uppercase tracking-ultra py-2.5 border border-white/5 rounded-lg hover:bg-white/[0.03] font-display">
+                        Full Action Plan
+                        <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+</button>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="mt-2 pt-4 border-t border-white/5 flex justify-between items-center shrink-0">
+<div class="flex items-center gap-3">
+<div class="size-1.5 rounded-full bg-primary/40 animate-pulse"></div>
+<p class="text-[9px] font-bold text-muted uppercase tracking-ultra">Analysis Engine <span class="text-text-primary/40">v2.4.0</span></p>
+</div>
+<div class="flex gap-3">
+<button class="px-5 py-2 rounded-full text-[10px] font-bold text-text-primary border border-white/10 hover:bg-white/5 transition-all pill-shadow uppercase tracking-wider font-display">
+                    Print
+                </button>
+<button class="bg-gradient-to-r from-primary to-emerald-500 text-background-dark font-black px-6 py-2 rounded-full text-[10px] hover:scale-[1.02] active:scale-95 transition-all shadow-xl flex items-center gap-2 uppercase tracking-widest pill-shadow font-display">
+                    Export PDF
+                    <span class="material-symbols-outlined text-sm">download</span>
+</button>
+</div>
+</footer>
+</div>
+</body></html>

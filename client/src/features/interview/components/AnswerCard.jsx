@@ -1,11 +1,4 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Sparkles, Mic, Keyboard } from "lucide-react";
 import { VoiceAnswerInput } from "./VoiceAnswerInput";
@@ -24,43 +17,25 @@ export function AnswerCard({
   onToggleRecording,
   onSubmitFeedback,
 }) {
+  const showSubmit =
+    userAnswer.trim() && !feedback && !isTranscribing && !isLoadingFeedback;
+
   return (
-    <Card className="shadow-xl border border-white/10">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-xl font-semibold text-foreground">
-            Your Answer
-          </CardTitle>
-
-          {/* Voice / Type toggle */}
-          <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
-            <button
-              onClick={() => onVoiceModeChange(true)}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                voiceMode
-                  ? "bg-emerald-500 text-white shadow"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Mic className="inline w-3.5 h-3.5 mr-1" />
-              Voice
-            </button>
-            <button
-              onClick={() => onVoiceModeChange(false)}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                !voiceMode
-                  ? "bg-emerald-500 text-white shadow"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Keyboard className="inline w-3.5 h-3.5 mr-1" />
-              Type
-            </button>
-          </div>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+      <div className="lg:col-span-2 bg-muted/40 rounded-[2rem] p-6 md:p-8 flex flex-col justify-center min-h-[220px] border border-border/60">
+        <div className="flex items-center gap-2 mb-6 justify-center bg-card/80 px-4 py-2 rounded-full border border-border w-fit mx-auto">
+          <Mic
+            className={`w-4 h-4 ${isRecording ? "text-red-500" : "text-emerald-600"}`}
+          />
+          <span className="text-emerald-700 dark:text-emerald-400 font-bold text-sm ">
+            {voiceMode
+              ? isRecording
+                ? "Recording active"
+                : "Voice response"
+              : "Typed response"}
+          </span>
         </div>
-      </CardHeader>
 
-      <CardContent className="space-y-4">
         {voiceMode ? (
           <VoiceAnswerInput
             isRecording={isRecording}
@@ -72,42 +47,75 @@ export function AnswerCard({
             isLoadingQuestion={isLoadingQuestion}
             onToggleRecording={onToggleRecording}
             onAnswerChange={onAnswerChange}
+            variant="bento"
           />
         ) : (
           <Textarea
             placeholder="Type your answer here…"
             value={userAnswer}
             onChange={(e) => onAnswerChange(e.target.value)}
-            rows={8}
-            className="bg-background border-border text-foreground text-base resize-none"
+            rows={10}
+            className="bg-background border-border text-foreground text-base resize-none rounded-xl"
             disabled={isLoadingFeedback || !!feedback}
           />
         )}
-      </CardContent>
+      </div>
 
-      <CardFooter>
-        {/* Voice mode: auto-feedback runs automatically; show retry only if it failed */}
-        {/* Type mode: manual feedback button as before */}
-        {(!voiceMode || (voiceMode && !isLoadingFeedback && !feedback && userAnswer.trim() && !isTranscribing)) && (
-          <Button
-            onClick={onSubmitFeedback}
-            disabled={
-              !userAnswer.trim() ||
-              isLoadingFeedback ||
-              !!feedback ||
-              isTranscribing
-            }
-            className="h-12 px-6 text-lg font-semibold bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer w-full sm:w-auto"
-          >
-            <Sparkles className="mr-2 h-5 w-5" />
-            {voiceMode
-              ? "Retry AI Feedback"
-              : isLoadingFeedback
-                ? "Analysing…"
-                : "Get AI Feedback"}
-          </Button>
-        )}
-      </CardFooter>
-    </Card>
+      <div className="bg-muted/50 rounded-[2rem] p-6 md:p-8 flex flex-col justify-between border border-border/60 gap-8">
+        <div>
+          <h4 className="font-headline font-bold text-sm text-foreground mb-4">
+            Response mode
+          </h4>
+          <div className="flex p-1 bg-card rounded-full border border-border">
+            <button
+              type="button"
+              onClick={() => onVoiceModeChange(true)}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-full font-bold text-xs transition-all ${
+                voiceMode
+                  ? "bg-gradient-to-br from-emerald-700 to-emerald-500 text-white shadow-md"
+                  : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              <Mic className="w-3.5 h-3.5" />
+              Voice
+            </button>
+            <button
+              type="button"
+              onClick={() => onVoiceModeChange(false)}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-full font-bold text-xs transition-all ${
+                !voiceMode
+                  ? "bg-gradient-to-br from-emerald-700 to-emerald-500 text-white shadow-md"
+                  : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              <Keyboard className="w-3.5 h-3.5" />
+              Type
+            </button>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          {showSubmit && (
+            <Button
+              onClick={onSubmitFeedback}
+              disabled={isLoadingFeedback || isRecording}
+              className="w-full rounded-full py-6 text-base font-bold bg-gradient-to-br from-emerald-700 to-emerald-500 hover:from-emerald-800 hover:to-emerald-600 text-white shadow-lg"
+            >
+              {isLoadingFeedback ? "Analysing…" : "Submit answer"}
+            </Button>
+          )}
+          {voiceMode && isRecording && (
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onToggleRecording}
+              className="w-full rounded-full py-6 font-headline font-bold text-muted-foreground hover:text-foreground"
+            >
+              Finish recording
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

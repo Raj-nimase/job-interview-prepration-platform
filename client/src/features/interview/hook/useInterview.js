@@ -8,8 +8,8 @@ import {
   getFeedbackAPI,
   startSession,
 } from "../services/interview.api";
-
-export const MAX_QUESTIONS = 5;
+import { MAX_QUESTIONS } from "../constants/interview.constants";
+export { MAX_QUESTIONS };
 
 export function useInterview() {
   const nav = useNavigate();
@@ -213,11 +213,46 @@ export function useInterview() {
   };
 
   // ─── End interview ─────────────────────────────────────────────────────────
+  // When `finalHistory` is passed (e.g. after the last "Next"), use it as-is.
+  // When called with no args, merge the current in-progress turn so partial
+  // sessions still appear on the summary.
   const endInterview = (finalHistory) => {
-    const h = finalHistory || ctx.history;
+    let h;
+    if (Array.isArray(finalHistory)) {
+      h = finalHistory;
+    } else {
+      h = [...ctx.history];
+      const q = (ctx.question || "").trim();
+      const answer = (ctx.userAnswer || ctx.transcript || "").trim();
+      const hasFeedback =
+        ctx.feedback != null &&
+        ctx.feedback !== "" &&
+        (typeof ctx.feedback !== "string" || ctx.feedback.trim().length > 0);
+
+      const shouldIncludeCurrent =
+        q.length > 0 && (answer.length > 0 || hasFeedback);
+
+      if (shouldIncludeCurrent) {
+        const entry = {
+          question: ctx.question,
+          answer: ctx.userAnswer || ctx.transcript || "",
+          feedback: ctx.feedback || "",
+        };
+        const last = h[h.length - 1];
+        if (last && last.question === entry.question) {
+          h = [...h.slice(0, -1), entry];
+        } else {
+          h.push(entry);
+        }
+      }
+    }
+
+    ctx.setHistory(h);
     localStorage.setItem("interviewHistory", JSON.stringify(h));
     localStorage.setItem("interviewRole", ctx.role || "");
-    ctx.setStarted(false);
+    // Do not setStarted(false) here — InterviewWorkspace would re-render on /interview
+    // with started=false and redirect to /selectRole before /summary applies.
+    // InterviewSummary sets started false on mount instead.
     nav("/summary");
   };
 
@@ -229,10 +264,11 @@ export function useInterview() {
       feedback: ctx.feedback,
     };
     const nextCount = ctx.history.length + 1;
-    ctx.setHistory((prev) => [...prev, entry]);
+    const updatedHistory = [...ctx.history, entry];
+    ctx.setHistory(updatedHistory);
 
     if (nextCount >= MAX_QUESTIONS) {
-      endInterview([...ctx.history, entry]);
+      endInterview(updatedHistory);
     } else {
       ctx.setUserAnswer("");
       ctx.setTranscript("");
@@ -242,10 +278,14 @@ export function useInterview() {
   };
 
   // ─── Begin interview (create DB session + load first question) ─────────────
-  const beginInterview = async () => {
+  // Accepts optional role/experience params since React state updates are async
+  const beginInterview = async (overrideRole, overrideExperience) => {
+    const r = overrideRole || ctx.role;
+    const exp = overrideExperience || ctx.experience;
+
     if (userId) {
       try {
-        const data = await startSession(userId, ctx.role);
+        const data = await startSession(userId, r);
         localStorage.setItem("sessionId", data.sessionId);
       } catch (error) {
         console.warn(
@@ -255,7 +295,7 @@ export function useInterview() {
       }
     }
     ctx.setStarted(true);
-    getNextQuestion(ctx.role, ctx.experience);
+    getNextQuestion(r, exp);
   };
 
   return {

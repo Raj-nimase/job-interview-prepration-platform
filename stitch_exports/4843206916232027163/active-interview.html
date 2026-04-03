@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Curator AI - Active Interview</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#fc7c78",
+                        "surface-container-low": "#f2f4f6",
+                        "surface-dim": "#d8dadc",
+                        "secondary-fixed-dim": "#9ed2b5",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface": "#f7f9fb",
+                        "secondary": "#376850",
+                        "surface-container": "#eceef0",
+                        "on-tertiary-fixed-variant": "#842225",
+                        "outline-variant": "#bbcabf",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#00422b",
+                        "on-surface": "#191c1e",
+                        "surface-container-high": "#e6e8ea",
+                        "surface-tint": "#006c49",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed": "#410005",
+                        "on-background": "#191c1e",
+                        "on-tertiary-container": "#711419",
+                        "tertiary": "#a43a3a",
+                        "surface-container-highest": "#e0e3e5",
+                        "secondary-fixed": "#baeed1",
+                        "primary-container": "#10b981",
+                        "on-surface-variant": "#3c4a42",
+                        "on-primary-fixed-variant": "#005236",
+                        "error": "#ba1a1a",
+                        "background": "#f7f9fb",
+                        "primary": "#006c49",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#4edea3",
+                        "on-primary-fixed": "#002113",
+                        "inverse-surface": "#2d3133",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb3af",
+                        "on-secondary-fixed": "#002113",
+                        "tertiary-fixed": "#ffdad7",
+                        "surface-variant": "#e0e3e5",
+                        "outline": "#6c7a71",
+                        "surface-bright": "#f7f9fb",
+                        "secondary-container": "#b7ebce",
+                        "primary-fixed": "#6ffbbe",
+                        "inverse-primary": "#4edea3",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#3c6c54",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed-variant": "#1e4f3a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .waveform-bar {
+            width: 3px;
+            background: linear-gradient(to top, #10b981, #006c49);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface">
+<!-- Main Content Canvas -->
+<main class="min-h-screen">
+<div class="py-16 px-8 max-w-6xl mx-auto">
+<!-- Header Area -->
+<div class="mb-12">
+<div class="flex justify-between items-end mb-6">
+<div>
+<span class="text-primary font-headline font-bold text-xs uppercase tracking-[0.2em] mb-2 block">Session Protocol</span>
+<h2 class="text-4xl font-headline font-extrabold text-on-surface tracking-tight">Active Interview</h2>
+</div>
+<div class="text-right">
+<span class="font-headline font-bold text-on-surface-variant text-sm block mb-2">Question 1 of 5</span>
+<div class="w-48 h-2 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full w-1/5 bg-gradient-to-r from-primary to-primary-container"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Question Area Card -->
+<div class="relative bg-surface-container-lowest rounded-[2rem] p-12 shadow-[0px_12px_32px_rgba(25,28,30,0.04)] mb-8">
+<div class="inline-flex items-center gap-2 bg-secondary-container text-on-secondary-container px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-8">
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                    Strategic Leadership
+                </div>
+<h3 class="text-3xl font-headline font-semibold text-on-surface leading-tight max-w-3xl">
+                    "Can you describe a time when you had to navigate a high-stakes conflict between two key departments?"
+                </h3>
+</div>
+<!-- Visualization & Controls -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Recording Visualization (Bento Style) -->
+<div class="lg:col-span-2 bg-surface-container-low rounded-[2rem] p-8 flex flex-col items-center justify-center min-h-[240px]">
+<div class="flex items-center gap-2 mb-8 bg-white/50 px-4 py-2 rounded-full border border-outline-variant/10">
+<span class="material-symbols-outlined text-primary" data-icon="mic" style="font-variation-settings: 'FILL' 1;">mic</span>
+<span class="text-primary font-bold text-xs uppercase tracking-widest">Recording Active</span>
+</div>
+<!-- Voice Waveform -->
+<div class="flex items-end gap-1.5 h-16 w-full max-w-sm">
+<div class="waveform-bar h-1/3"></div>
+<div class="waveform-bar h-1/2"></div>
+<div class="waveform-bar h-2/3"></div>
+<div class="waveform-bar h-full"></div>
+<div class="waveform-bar h-4/5"></div>
+<div class="waveform-bar h-2/3"></div>
+<div class="waveform-bar h-1/2"></div>
+<div class="waveform-bar h-1/3"></div>
+<div class="waveform-bar h-2/3"></div>
+<div class="waveform-bar h-5/6"></div>
+<div class="waveform-bar h-full"></div>
+<div class="waveform-bar h-3/4"></div>
+<div class="waveform-bar h-1/2"></div>
+<div class="waveform-bar h-2/3"></div>
+<div class="waveform-bar h-5/6"></div>
+<div class="waveform-bar h-1/3"></div>
+<div class="waveform-bar h-2/3"></div>
+<div class="waveform-bar h-1/2"></div>
+<div class="waveform-bar h-full"></div>
+<div class="waveform-bar h-4/5"></div>
+<div class="waveform-bar h-2/3"></div>
+<div class="waveform-bar h-1/2"></div>
+<div class="waveform-bar h-1/3"></div>
+</div>
+</div>
+<!-- Mode Controls -->
+<div class="bg-surface-container-high rounded-[2rem] p-8 flex flex-col justify-between">
+<div>
+<h4 class="font-headline font-bold text-sm text-on-surface mb-6">Response Mode</h4>
+<div class="flex p-1 bg-surface-container-lowest rounded-full border border-outline-variant/10">
+<button class="flex-1 flex items-center justify-center gap-2 py-3 bg-gradient-to-br from-primary to-primary-container text-white rounded-full font-bold text-xs shadow-md transition-transform active:scale-95">
+<span class="material-symbols-outlined text-sm" data-icon="keyboard_voice">keyboard_voice</span>
+                                Voice Mode
+                            </button>
+<button class="flex-1 flex items-center justify-center gap-2 py-3 text-on-surface-variant font-bold text-xs hover:bg-surface-container-low transition-colors rounded-full">
+<span class="material-symbols-outlined text-sm" data-icon="keyboard">keyboard</span>
+                                Type Mode
+                            </button>
+</div>
+</div>
+<div class="space-y-3">
+<button class="w-full bg-gradient-to-br from-primary to-primary-container text-on-primary py-4 rounded-full font-headline font-extrabold shadow-lg hover:shadow-primary/20 transition-all active:scale-[0.98]">
+                            Submit Answer
+                        </button>
+<button class="w-full bg-transparent text-on-surface-variant hover:text-on-surface py-4 rounded-full font-headline font-bold transition-colors">
+                            Finish Recording
+                        </button>
+</div>
+</div>
+</div>
+<!-- Asymmetric Tip Section -->
+<div class="mt-12 flex gap-12 items-start">
+<div class="flex-1 border-t border-outline-variant/15 pt-8">
+<p class="text-on-surface-variant leading-relaxed text-lg italic max-w-2xl font-medium">
+                        "Curator AI is listening to your context and intent. We'll analyze your conflict resolution tactics and leadership maturity based on this response."
+                    </p>
+</div>
+<div class="w-1/3 relative -mt-4">
+<div class="bg-surface-container-low p-6 rounded-2xl">
+<img alt="Corporate context" class="rounded-xl grayscale opacity-40 mb-4" data-alt="Minimalist modern office interior with large glass windows, clean white lines, and subtle shadows of green plants" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCdAOcFfhTMA_dTo6iQWlpUQIC7H3hDFWTDArSEYk3x7fTV6eAFy7mMxiGveBgNXgNj3_JLpdfkD3g_DLdVDvYA6mYIsEdBgxTcPPjezn_DwmPN-AcVAC6_ixTIEdNu8tHZWOCjjPIly60-orOlPOk9cCb9ihcBX_0tILfADF-Y0EzUQ0sIQOxZLIuMPjwroVX5LkyDpHjs02VlvJpNv7qWstV24nxMxtlaKxPMRDtwirB31XPR1CKiQxDBDUMV9iM0295MGcPQyE"/>
+<span class="text-[10px] text-on-surface-variant uppercase tracking-[0.3em] font-bold">Session Integrity: High</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

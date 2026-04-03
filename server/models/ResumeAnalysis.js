@@ -8,6 +8,7 @@ const resumeAnalysisSchema = new mongoose.Schema(
     },
     fileName: { type: String, default: "" },
     targetRole: { type: String, default: "" },
+    resumeText: { type: String, default: "" },
     overallScore: { type: Number, default: 0 },
     summary: { type: String, default: "" },
     strengths: [{ type: String }],
