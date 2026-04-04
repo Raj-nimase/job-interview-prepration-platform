@@ -1,3 +1,4 @@
+import { TrendingUp, AlertTriangle } from "lucide-react";
 import { getFeedbackParts } from "../services/interviewFeedback.helpers";
 
 const TAGS = ["Core competency", "Depth", "Communication", "Leadership"];
@@ -65,6 +66,36 @@ export function SummaryQuestionBreakdown({ history }) {
                   __html: parts.text.replace(/\n/g, "<br />"),
                 }}
               />
+            )}
+
+            {(parts.nextLevelEdge || parts.refinementAreas) && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 pt-5 border-t border-border">
+                <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5">
+                  <div className="flex items-center gap-2 text-emerald-600 mb-3">
+                    <TrendingUp className="w-4 h-4" />
+                    <h4 className="text-xs font-bold uppercase tracking-widest">
+                      Next-level edge
+                    </h4>
+                  </div>
+                  <p className="text-sm text-foreground leading-relaxed">
+                    {parts.nextLevelEdge ||
+                      "Lean into the strongest part of this answer in future interviews."}
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5">
+                  <div className="flex items-center gap-2 text-amber-600 mb-3">
+                    <AlertTriangle className="w-4 h-4" />
+                    <h4 className="text-xs font-bold uppercase tracking-widest">
+                      Refinement areas
+                    </h4>
+                  </div>
+                  <p className="text-sm text-foreground leading-relaxed">
+                    {parts.refinementAreas ||
+                      "Tighten the weakest part of the response before the next round."}
+                  </p>
+                </div>
+              </div>
             )}
           </article>
         );

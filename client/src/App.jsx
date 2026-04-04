@@ -13,6 +13,7 @@ import Navbar from "./components/Navbar";
 import InterviewTips from "./pages/Interviewtip";
 import QuizCourse from "./features/quiz/pages/QuizCoursePage";
 import ResumeTemplate from "./features/resume-builder/pages/ResumeTemplatePage";
+import PastInterviewReport from "./features/interview/pages/PastInterviewReport";
 
 // toast notifications
 import { Toaster } from "react-hot-toast";
@@ -71,6 +72,10 @@ function App() {
             <Route path="/interview" element={<InterviewWorkspace />} />
             <Route path="/summary" element={<InterviewSummary />} />
           </Route>
+          <Route
+            path="/interview-report/:id"
+            element={<PastInterviewReport />}
+          />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

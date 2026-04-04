@@ -1,9 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Brain, RotateCw } from "lucide-react";
+import { Brain, RotateCw, TrendingUp, AlertTriangle, Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function SummaryInsightsAside({
   averageScore,
   questionCount,
+  report,
+  isLoadingReport,
   onNewInterview,
 }) {
   const clarity =
@@ -35,7 +38,52 @@ export function SummaryInsightsAside({
               </div>
             </div>
           )}
-          <p className="text-xs text-muted-foreground mt-6 leading-relaxed">
+
+          {/* AI Comprehensive Summary Section */}
+          <div className="mt-8 pt-6 border-t border-border/60">
+            <h4 className="text-sm font-bold text-foreground mb-4">
+              AI Summary Report
+            </h4>
+            
+            {isLoadingReport ? (
+              <div className="space-y-4">
+                <Skeleton className="h-20 w-full rounded-xl" />
+                <Skeleton className="h-20 w-full rounded-xl" />
+                <div className="flex items-center justify-center py-2">
+                  <Loader2 className="w-4 h-4 text-emerald-500 animate-spin mr-2" />
+                  <span className="text-xs text-muted-foreground">Analyzing session...</span>
+                </div>
+              </div>
+            ) : report ? (
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-emerald-600">
+                    <TrendingUp className="w-4 h-4" />
+                    <span className="text-xs font-bold uppercase tracking-wider">Next-Level Edge</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {report.nextLevelEdge || "Great job completing the interview. Review your individual answers for specific strengths."}
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-amber-500">
+                    <AlertTriangle className="w-4 h-4" />
+                    <span className="text-xs font-bold uppercase tracking-wider">Refinement Areas</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {report.refinementAreas || "Review the feedback on your questions to find areas for improvement."}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground italic">
+                Summary report is unavailable for this session.
+              </p>
+            )}
+          </div>
+
+          <p className="text-xs text-muted-foreground mt-8 leading-relaxed">
             Based on {questionCount} scored responses when the API returned a
             numeric score.
           </p>

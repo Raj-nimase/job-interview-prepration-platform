@@ -24,23 +24,27 @@ const Login = () => {
       password: data.password,
     };
 
-    const res = isSignup
-      ? await registerUser(payload)
-      : await loginUser(payload);
+    try {
+      const res = isSignup
+        ? await registerUser(payload)
+        : await loginUser(payload);
 
-    const { user } = res;
-    if (!user) {
-      throw new Error("Invalid response: missing user");
+      const user = res?.user;
+      if (!user) {
+        throw new Error("Invalid response: missing user");
+      }
+
+      toast.success(
+        isSignup ? "Registration successful" : "Logged in successfully",
+      );
+
+      if (isSignup) signupForm.reset();
+      else loginForm.reset();
+
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error(error?.message || "Authentication failed");
     }
-
-    toast.success(
-      isSignup ? "Registration successful" : "Logged in successfully",
-    )
-
-    if (isSignup) signupForm.reset();
-    else loginForm.reset();
-
-    navigate("/dashboard");
   };
 
   if (loading) {

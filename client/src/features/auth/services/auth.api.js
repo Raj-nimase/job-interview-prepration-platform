@@ -72,7 +72,7 @@ function validatePassword(password) {
 /**
  * @description Register a new user.
  * @param {{name?:string,email:string,password:string}} payload
- * @returns {Promise<{token:string,user:Object}>}
+ * @returns {Promise<{user:Object,message?:string}>}
  * @throws {Object} Error object with message and status
  */
 export async function register(payload) {
@@ -93,7 +93,7 @@ export async function register(payload) {
 
     const response = await authClient.post("/auth/register", payload);
 
-    if (!response.data?.token || !response.data?.user) {
+    if (!response.data?.user) {
       throw new Error("Invalid response from server");
     }
 

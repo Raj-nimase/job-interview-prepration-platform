@@ -6,6 +6,8 @@ export function getFeedbackParts(feedback) {
     return {
       text: "",
       score: null,
+      nextLevelEdge: "",
+      refinementAreas: "",
       strengths: [],
       weaknesses: [],
       suggestions: [],
@@ -16,6 +18,8 @@ export function getFeedbackParts(feedback) {
     return {
       text: feedback,
       score: null,
+      nextLevelEdge: "",
+      refinementAreas: "",
       strengths: [],
       weaknesses: [],
       suggestions: [],
@@ -28,6 +32,8 @@ export function getFeedbackParts(feedback) {
       feedback.score !== undefined && feedback.score !== null
         ? Number(feedback.score)
         : null,
+    nextLevelEdge: feedback.nextLevelEdge || "",
+    refinementAreas: feedback.refinementAreas || "",
     strengths: Array.isArray(feedback.strengths) ? feedback.strengths : [],
     weaknesses: Array.isArray(feedback.weaknesses) ? feedback.weaknesses : [],
     suggestions: Array.isArray(feedback.suggestions)

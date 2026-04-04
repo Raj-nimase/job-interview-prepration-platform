@@ -1,5 +1,6 @@
 import { useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "@/features/auth/context/auth.context";
 import { InterviewContext } from "../context/interview.context";
 import {
   generateQuestion,
@@ -14,7 +15,8 @@ export { MAX_QUESTIONS };
 export function useInterview() {
   const nav = useNavigate();
   const ctx = useContext(InterviewContext);
-  const userId = localStorage.getItem("userId");
+  const { user: authUser } = useContext(AuthContext);
+  const userId = authUser?.id || localStorage.getItem("userId");
 
   // ─── Recording refs (local to this hook instance) ──────────────────────────
   const recorderRef = useRef(null);

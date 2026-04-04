@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   Lightbulb,
+  TrendingUp,
   ArrowRight,
   XCircle,
 } from "lucide-react";
@@ -83,8 +84,7 @@ export function QuestionFeedbackPanel({
           Question {qNum} of {MAX_QUESTIONS}
           {role ? (
             <>
-              :{" "}
-              <span className="text-foreground">{role}</span>
+              : <span className="text-foreground">{role}</span>
             </>
           ) : null}
         </p>
@@ -144,6 +144,36 @@ export function QuestionFeedbackPanel({
               />
             )}
 
+            {(parts.nextLevelEdge || parts.refinementAreas) && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5">
+                  <div className="flex items-center gap-2 text-emerald-600 mb-3">
+                    <TrendingUp className="w-4 h-4" />
+                    <h4 className="text-xs font-bold uppercase tracking-widest">
+                      Next-level edge
+                    </h4>
+                  </div>
+                  <p className="text-sm text-foreground leading-relaxed">
+                    {parts.nextLevelEdge ||
+                      "Use the strongest part of your answer as a repeatable pattern in future responses."}
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5">
+                  <div className="flex items-center gap-2 text-amber-600 mb-3">
+                    <AlertTriangle className="w-4 h-4" />
+                    <h4 className="text-xs font-bold uppercase tracking-widest">
+                      Refinement areas
+                    </h4>
+                  </div>
+                  <p className="text-sm text-foreground leading-relaxed">
+                    {parts.refinementAreas ||
+                      "Tighten the weakest part of the answer before the next question."}
+                  </p>
+                </div>
+              </div>
+            )}
+
             {parts.strengths.length > 0 && (
               <section className="mb-8">
                 <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
@@ -157,7 +187,9 @@ export function QuestionFeedbackPanel({
                       className="p-4 rounded-xl bg-muted/50 flex gap-3 items-start border border-border/50"
                     >
                       <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                      <p className="text-sm text-foreground leading-snug">{s}</p>
+                      <p className="text-sm text-foreground leading-snug">
+                        {s}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -177,7 +209,9 @@ export function QuestionFeedbackPanel({
                       className="p-4 rounded-xl border border-amber-500/25 bg-amber-500/5 flex gap-3 items-start"
                     >
                       <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-                      <p className="text-sm text-foreground leading-snug">{w}</p>
+                      <p className="text-sm text-foreground leading-snug">
+                        {w}
+                      </p>
                     </div>
                   ))}
                 </div>

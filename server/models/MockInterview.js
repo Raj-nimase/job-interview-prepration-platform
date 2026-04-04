@@ -16,6 +16,12 @@ const MockInterviewSchema = new mongoose.Schema({
   role: { type: String, required: true },
   questionsAsked: [QuestionSchema],
   overallScore: { type: Number, default: 0 },
+  summary: {
+    nextLevelEdge: { type: String, default: "" },
+    refinementAreas: { type: String, default: "" },
+  },
+  completed: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
 });
 
 export default mongoose.model("MockInterview", MockInterviewSchema);

@@ -18,10 +18,13 @@ export const useAuth = () => {
       try {
         const response = await login(payload);
         setUser(response.user);
-        toast.success("Logged in successfully");
+        if (response.user?.id) {
+          localStorage.setItem("userId", response.user.id);
+        }
         return response;
       } catch (error) {
         console.error("Login error:", error);
+        throw error;
       } finally {
         setLoading(false);
       }
@@ -41,8 +44,13 @@ export const useAuth = () => {
       try {
         const response = await register(payload);
         setUser(response.user);
+        if (response.user?.id) {
+          localStorage.setItem("userId", response.user.id);
+        }
+        return response;
       } catch (error) {
         console.error("Register error:", error);
+        throw error;
       } finally {
         setLoading(false);
       }
@@ -60,6 +68,9 @@ export const useAuth = () => {
     try {
       const response = await getMe();
       setUser(response.user);
+      if (response.user?.id) {
+        localStorage.setItem("userId", response.user.id);
+      }
       return response.user;
     } catch (error) {
       if (error?.status && error.status !== 401) {
@@ -80,6 +91,7 @@ export const useAuth = () => {
     try {
       await logout();
       setUser(null);
+      localStorage.removeItem("userId");
       toast.success("Logged out successfully");
     } catch (error) {
       console.error("Logout error:", error);

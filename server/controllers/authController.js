@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-/** 
+/**
  * @description Generate JWT token
  * @param {string} id - User ID
  * @returns {string} JWT token
@@ -17,7 +17,7 @@ const generateToken = (id) => {
 /**
  * @route   POST /api/auth/register
  * @description   Register a new user
- * @access  Public  
+ * @access  Public
  */
 
 export const register = async (req, res) => {
@@ -47,7 +47,7 @@ export const register = async (req, res) => {
 
     res.status(201).json({
       message: "User created successfully",
-      user: { name: newUser.name, email: newUser.email },
+      user: { id: newUser._id, name: newUser.name, email: newUser.email },
     });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
@@ -57,7 +57,7 @@ export const register = async (req, res) => {
 /**
  * @route   POST /api/auth/login
  * @description   Login a user
- * @access  Public  
+ * @access  Public
  */
 export const login = async (req, res) => {
   try {

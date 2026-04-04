@@ -5,10 +5,11 @@ const API_BASE = "http://localhost:4000";
 /**
  * Generate the next interview question.
  */
-export async function generateQuestion(role, experience) {
+export async function generateQuestion(role, experience, history = []) {
   const res = await axios.post(`${API_BASE}/interview/generate_question`, {
     role,
     experience,
+    history,
   });
   return res.data;
 }
@@ -66,5 +67,21 @@ export async function startSession(userId, role) {
     userId,
     role,
   });
+  return res.data;
+}
+
+/**
+ * Generate and fetch the final AI summary report for the interview.
+ */
+export async function getInterviewSummary(sessionId) {
+  const res = await axios.post(`${API_BASE}/interview/summary`, { sessionId });
+  return res.data;
+}
+
+/**
+ * Fetch full session details by ID
+ */
+export async function getSession(sessionId) {
+  const res = await axios.get(`${API_BASE}/api/session/${sessionId}`);
   return res.data;
 }
