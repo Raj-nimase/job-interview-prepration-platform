@@ -44,6 +44,7 @@ export async function getTTS(text) {
  */
 export async function getFeedbackAPI(
   userId,
+  sessionId,
   role,
   experience,
   question,
@@ -51,6 +52,7 @@ export async function getFeedbackAPI(
 ) {
   const res = await axios.post(`${API_BASE}/interview/feedback`, {
     userId,
+    sessionId,
     role,
     experience,
     question,

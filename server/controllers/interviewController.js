@@ -17,6 +17,196 @@ const gemini = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 // ─── Deepgram (TTS only) ────────────────────────────────────────────────────────
 const DEEPGRAM_API_KEY = process.env.DEEPGRAM_API_KEY;
 
+const safeJsonParse = (rawText) => {
+  const raw = String(rawText || "").trim();
+  if (!raw) return { ok: false, data: null, error: "Empty response" };
+
+  const cleaned = raw.replace(/```json|```/g, "").trim();
+  try {
+    return { ok: true, data: JSON.parse(cleaned), error: null };
+  } catch {
+    const start = cleaned.indexOf("{");
+    const end = cleaned.lastIndexOf("}");
+    if (start !== -1 && end !== -1 && end > start) {
+      try {
+        return {
+          ok: true,
+          data: JSON.parse(cleaned.slice(start, end + 1)),
+          error: null,
+        };
+      } catch (err2) {
+        return {
+          ok: false,
+          data: null,
+          error: err2?.message || "Failed to parse JSON slice",
+        };
+      }
+    }
+    return { ok: false, data: null, error: "Failed to parse JSON" };
+  }
+};
+
+const clampScore10 = (score) => {
+  const numeric = Number(score);
+  if (Number.isNaN(numeric)) return 0;
+  return Math.max(0, Math.min(10, numeric));
+};
+
+const normalizeList = (value, limit = 6) => {
+  if (!value) return [];
+  if (Array.isArray(value)) {
+    return value
+      .map((v) => String(v || "").trim())
+      .filter(Boolean)
+      .slice(0, limit);
+  }
+  if (typeof value === "string") {
+    return value
+      .split(/\n|\.|;/)
+      .map((v) => v.trim())
+      .filter(Boolean)
+      .slice(0, limit);
+  }
+  return [];
+};
+
+const normalizeFeedbackData = (raw = {}) => ({
+  score: clampScore10(raw.score),
+  feedback:
+    typeof raw.feedback === "string" && raw.feedback.trim()
+      ? raw.feedback.trim()
+      : "Your answer has a reasonable base, but can be sharper and more structured.",
+  nextLevelEdge:
+    typeof raw.nextLevelEdge === "string" ? raw.nextLevelEdge.trim() : "",
+  refinementAreas:
+    typeof raw.refinementAreas === "string" ? raw.refinementAreas.trim() : "",
+  strengths: normalizeList(raw.strengths, 5),
+  weaknesses: normalizeList(raw.weaknesses, 5),
+  suggestions: normalizeList(raw.suggestions, 6),
+});
+
+const normalizeQuestionText = (questionRaw = "") => {
+  return String(questionRaw || "")
+    .replace(/^["'`\s]+|["'`\s]+$/g, "")
+    .replace(/^question\s*:\s*/i, "")
+    .replace(/\s+/g, " ")
+    .trim();
+};
+
+const getDifficultyBand = (score) => {
+  if (score >= 8) return "hard";
+  if (score >= 6) return "medium";
+  return "easy";
+};
+
+const buildFeedbackPrompt = ({ role, experience, question, answer }) => `SYSTEM:
+You are an expert technical interviewer evaluating a candidate response.
+You must score realistically and avoid inflated ratings.
+
+CONTEXT:
+- Role: ${role}
+- Candidate experience: ${experience}
+- Interview question: ${question}
+- Candidate answer: ${answer}
+
+SCORING RUBRIC (0-10):
+- 9-10: excellent depth, correct, structured, tradeoffs/edge-cases covered
+- 7-8: mostly correct, good clarity, minor misses
+- 5-6: partial understanding, gaps in depth/examples
+- 3-4: weak conceptual clarity, important mistakes
+- 0-2: incorrect or non-answer
+
+RULES:
+- Base your evaluation only on the candidate answer text.
+- Do not assume unstated knowledge.
+- Keep feedback specific and actionable.
+- Suggestions must be practical for next interview attempts.
+- Return ONLY valid JSON.
+
+OUTPUT JSON SHAPE:
+{
+  "score": 7.5,
+  "feedback": "Short paragraph with balanced evaluation.",
+  "nextLevelEdge": "3-4 sentences on strengths to leverage next time.",
+  "refinementAreas": "3-4 sentences on top gaps and how to fix them.",
+  "strengths": ["..."],
+  "weaknesses": ["..."],
+  "suggestions": ["..."]
+}`;
+
+const buildQuestionPrompt = ({
+  role,
+  experience,
+  currentTopic,
+  questionsAskedInCurrentTopic,
+  history = [],
+  lastInteraction = null,
+  difficulty = "medium",
+}) => {
+  const previousQuestions = history.length
+    ? history.map((h, i) => `Q${i + 1}: ${h.question}`).join("\n")
+    : "None";
+
+  const lastScore = clampScore10(lastInteraction?.feedback?.score);
+  const lastAnswer = lastInteraction?.answer
+    ? String(lastInteraction.answer).slice(0, 600)
+    : "";
+
+  return `SYSTEM:
+You are a realistic technical interviewer conducting a live interview.
+Ask exactly one natural-sounding interview question.
+
+CANDIDATE PROFILE:
+- Role: ${role}
+- Experience level: ${experience}
+
+INTERVIEW STATE:
+- Current topic: ${currentTopic}
+- Question number in this topic: ${questionsAskedInCurrentTopic + 1}
+- Target difficulty for this turn: ${difficulty}
+- Previously asked questions:
+${previousQuestions}
+
+LAST INTERACTION:
+- Last score: ${lastInteraction ? `${lastScore}/10` : "N/A"}
+- Last answer (if any): ${lastAnswer || "N/A"}
+
+QUESTION FLOW RULES:
+1) Do not repeat or paraphrase any previous question.
+2) Keep question tightly focused on current topic.
+3) Adaptive progression:
+   - If last score < 6: ask a simpler, foundational clarification question.
+   - If last score 6-7.9: ask an application/debugging scenario.
+   - If last score >= 8: ask deeper tradeoff/system-level follow-up.
+4) Keep the question concise (1-2 lines) and interview-realistic.
+5) No greetings, no explanations, no bullets.
+6) Return ONLY the raw question text.
+
+Generate the next interview question now.`;
+};
+
+const buildSummaryPrompt = ({ role, transcript }) => `SYSTEM:
+You are an expert interview coach generating an end-of-session performance summary.
+Be specific, balanced, and evidence-based.
+
+ROLE:
+${role}
+
+TRANSCRIPT + PER-QUESTION FEEDBACK:
+${transcript}
+
+RULES:
+- Identify true strengths and repeated weaknesses across answers.
+- Do not invent performance details not present in transcript.
+- Provide practical next-step guidance for improvement.
+- Return ONLY valid JSON.
+
+OUTPUT:
+{
+  "nextLevelEdge": "3-4 sentences on strongest differentiators and how to leverage them.",
+  "refinementAreas": "3-4 sentences on repeated gaps and concrete preparation steps."
+}`;
+
 // ─── TRANSCRIBE via Gemini STT ─────────────────────────────────────────────────
 export const transcribe = async (req, res) => {
   try {
@@ -127,41 +317,25 @@ export const feedback = async (req, res) => {
     return res.status(400).json({ error: "Missing required fields." });
   }
 
-  const prompt = `You are a technical interviewer for the role of "${role}".
-The candidate's experience level is: ${experience}.
-
-Question: ${question}
-Candidate's Answer: ${answer}
-
-Provide feedback appropriate for their experience level:
-- If Fresher: encourage fundamentals, give learning resources.
-- If Mid-Level: focus on efficiency, structure, and applied skills.
-- If Senior: expect leadership, scalability, and depth in explanation.
-
-Return ONLY valid JSON — no markdown fences, no extra text:
-{
-  "score": 8,
-  "feedback": "Your answer demonstrated good understanding of the concept...",
-  "nextLevelEdge": "A short paragraph explaining the strongest thing the candidate can lean into next time.",
-  "refinementAreas": "A short paragraph describing the most important gap or blind spot to improve.",
-  "strengths": ["Clear explanation", "Relevant examples"],
-  "weaknesses": ["Lacked depth on edge cases"],
-  "suggestions": ["Study system design patterns", "Improve clarity on scalability topics"]
-}`;
+  const prompt = buildFeedbackPrompt({ role, experience, question, answer });
 
   try {
-    const result = await gemini.generateContent(prompt);
+    const result = await gemini.generateContent({
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.2,
+        responseMimeType: "application/json",
+      },
+    });
     const raw = result.response.text().trim();
 
-    let data;
-    try {
-      const cleaned = raw.replace(/```json|```/g, "").trim();
-      data = JSON.parse(cleaned);
-    } catch (e) {
+    const parsed = safeJsonParse(raw);
+    if (!parsed.ok) {
       return res
         .status(500)
-        .json({ error: "Failed to parse AI response", raw });
+        .json({ error: "Failed to parse AI response", details: parsed.error, raw });
     }
+    const data = normalizeFeedbackData(parsed.data);
 
     if (!data) return res.status(500).json({ error: "AI feedback failed." });
 
@@ -182,7 +356,7 @@ Return ONLY valid JSON — no markdown fences, no extra text:
         userId,
         role,
         completed: { $ne: true },
-      });
+      }).sort({ createdAt: -1 });
       if (!session) {
         session = new MockInterview({
           userId,
@@ -191,6 +365,10 @@ Return ONLY valid JSON — no markdown fences, no extra text:
           overallScore: 0,
         });
       }
+    }
+
+    if (!session) {
+      return res.status(404).json({ error: "Interview session not found." });
     }
 
     session.questionsAsked.push({ question, answer, feedback: data });
@@ -331,57 +509,56 @@ export const generate_question = async (req, res) => {
 
   const lastInteraction =
     history.length > 0 ? history[history.length - 1] : null;
+  const avgScore = history.length
+    ? history.reduce((sum, h) => sum + clampScore10(h?.feedback?.score), 0) /
+      history.length
+    : 0;
+  const lastScore = clampScore10(lastInteraction?.feedback?.score);
+  const blendedScore = history.length ? (avgScore + lastScore) / 2 : 0;
+  const targetDifficulty = getDifficultyBand(blendedScore);
 
   try {
-    let previousQuestionsStr = "None";
-    if (history.length > 0) {
-      previousQuestionsStr = history
-        .map((h, i) => `\nQ${i + 1}: ${h.question}`)
-        .join("");
-    }
-
-    let lastInteractionStr = "LAST INTERACTION: None (First question)";
-    if (lastInteraction) {
-      const score = lastInteraction.feedback?.score || "N/A";
-      lastInteractionStr = `LAST INTERACTION:
-Candidate's last answer: "${lastInteraction.answer}"
-Your feedback/assessment score of last answer: ${score}/10`;
-    }
-
-    const prompt = `You are an expert technical interviewer for the role of "${role}".
-The candidate has ${experience} experience level.
-
-INTERVIEW STATE:
-Current Topic: ${currentTopic}
-Question number in this topic: ${questionsAskedInCurrentTopic + 1}
-Previous questions asked: ${previousQuestionsStr}
-
-${lastInteractionStr}
-
-INSTRUCTIONS:
-1. Ask exactly ONE interview question.
-2. The question MUST be about the Current Topic: "${currentTopic}".
-3. DO NOT repeat any of the previous questions.
-4. If there is a last interaction:
-   - If the candidate's last answer was weak (score < 6) or incorrect, ask a slightly simpler question or clarify fundamentals.
-   - If the answer was good (score >= 6), ask a deeper or more advanced follow-up question related to the current topic.
-   - If moving to a new topic (Question number in this topic is 1), ask a foundational question for "${currentTopic}".
-5. Ensure the question matches their experience level (${experience}).
-   - For Freshers: focus on fundamentals, definitions, and simple problem-solving.
-   - For Mid-Level: focus on practical application, debugging, and moderately complex problem-solving.
-   - For Senior: focus on system design, optimization, leadership, and advanced problem-solving.
-6. Do not include pleasantries, greetings, or explanations.
-7. Return ONLY the question string.
-
-Generate the next question:`;
+    const prompt = buildQuestionPrompt({
+      role,
+      experience,
+      currentTopic,
+      questionsAskedInCurrentTopic,
+      history,
+      lastInteraction,
+      difficulty: targetDifficulty,
+    });
 
     const result = await gemini.generateContent({
       contents: [{ role: "user", parts: [{ text: prompt }] }],
       generationConfig: {
-        temperature: 0.3,
+        temperature: 0.35,
       },
     });
-    const question = result.response.text().trim();
+    let question = normalizeQuestionText(result.response.text());
+
+    // Retry once if model returns invalid or repeated question.
+    const questionLower = question.toLowerCase();
+    const alreadyAsked = history.some(
+      (h) => String(h?.question || "").trim().toLowerCase() === questionLower,
+    );
+    if (!question || question.length < 12 || alreadyAsked) {
+      const retryPrompt = `${prompt}
+
+IMPORTANT RETRY CONSTRAINT:
+- Your previous output was invalid (empty/too short/repeated).
+- Generate a NEW, non-repeated question now.
+- Return only the question text.`;
+      const retryResult = await gemini.generateContent({
+        contents: [{ role: "user", parts: [{ text: retryPrompt }] }],
+        generationConfig: { temperature: 0.45 },
+      });
+      question = normalizeQuestionText(retryResult.response.text());
+    }
+
+    if (!question) {
+      return res.status(500).json({ error: "Failed to generate valid question" });
+    }
+
     res.json({ question });
   } catch (err) {
     console.error("Error generating question:", err.message);
@@ -424,33 +601,26 @@ export const generate_summary = async (req, res) => {
       )
       .join("\n");
 
-    const prompt =
-      "You are an expert career coach reviewing a candidate's mock interview performance for the role of \"" +
-      session.role +
-      '".\n' +
-      "Here is the transcript and individual feedback for their responses:\n" +
-      transcript +
-      "\n\n" +
-      "Based on this complete performance, generate two summary paragraphs (Return ONLY valid JSON, no markdown formatting!):\n" +
-      "{\n" +
-      '  "nextLevelEdge": "Write a 3-4 sentence paragraph addressing their unique strengths, how they can leverage them to stand out among other candidates in this role.",\n' +
-      '  "refinementAreas": "Write a 3-4 sentence paragraph addressing an overall pattern of weakness or blind spots they demonstrated, and specific steps they should take to improve before the real interview."\n' +
-      "}";
+    const prompt = buildSummaryPrompt({ role: session.role, transcript });
 
     const result = await gemini.generateContent({
       contents: [{ role: "user", parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.4 },
+      generationConfig: { temperature: 0.25, responseMimeType: "application/json" },
     });
 
     const raw = result.response.text().trim();
-    let data;
-    try {
-      const cleaned = raw.replace(/```json|```/g, "").trim();
-      data = JSON.parse(cleaned);
-    } catch (e) {
+    const parsed = safeJsonParse(raw);
+    if (!parsed.ok) {
       return res
         .status(500)
-        .json({ error: "Failed to parse AI response", raw });
+        .json({ error: "Failed to parse AI response", details: parsed.error, raw });
+    }
+    const data = {
+      nextLevelEdge: String(parsed.data?.nextLevelEdge || "").trim(),
+      refinementAreas: String(parsed.data?.refinementAreas || "").trim(),
+    };
+    if (!data.nextLevelEdge || !data.refinementAreas) {
+      return res.status(500).json({ error: "AI summary response incomplete", raw });
     }
 
     session.summary = data;

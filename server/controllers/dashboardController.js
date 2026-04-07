@@ -4,11 +4,19 @@ export const getDashboard = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    // Fetch all sessions for this user
-    const sessions = await MockInterview.find({ userId })
+    // Fetch sessions for this user and keep only meaningful ones.
+    // Many users can have "started but empty" sessions that cause blank reports.
+    const rawSessions = await MockInterview.find({ userId })
       .sort({ createdAt: -1 })
-      .limit(5)
       .lean();
+    const sessions = rawSessions
+      .filter((s) => {
+        const attempted = s.questionsAsked?.length || 0;
+        const hasSummary =
+          !!s.summary?.nextLevelEdge || !!s.summary?.refinementAreas;
+        return attempted > 0 || hasSummary;
+      })
+      .slice(0, 5);
 
     const totalInterviews = sessions.length;
 

@@ -1,10 +1,6 @@
 import { motion } from "framer-motion";
-import {
-  ArrowLeft,
-  CheckCircle2,
-  TriangleAlert,
-  TrendingUp,
-} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, CheckCircle2, Download, TrendingUp } from "lucide-react";
 
 const SECTION_LABELS = {
   contactInfo: "Contact Info",
@@ -43,17 +39,9 @@ function getBarColor(score) {
   return "#f87171";
 }
 
-function getReadiness(score) {
-  if (score >= 80) return "READY";
-  if (score >= 65) return "POLISHING";
-  return "REWORK";
-}
-
 function getScoreLabel(score) {
-  if (score >= 80)
-    return "High role alignment with minor optimization gaps.";
-  if (score >= 65)
-    return "Good baseline with targeted improvements needed.";
+  if (score >= 80) return "High role alignment with minor optimization gaps.";
+  if (score >= 65) return "Good baseline with targeted improvements needed.";
   return "Requires significant refinement to improve match quality.";
 }
 
@@ -77,7 +65,25 @@ function toInsightPoints(sectionFeedback) {
     .slice(0, 2);
 }
 
-export function AnalysisResult({ analysis, targetRole, onBack }) {
+function toArray(value, max = 3) {
+  if (!value) return [];
+  if (Array.isArray(value)) return value.filter(Boolean).slice(0, max);
+  if (typeof value === "string") {
+    return value
+      .split(/\n|\.|;/)
+      .map((item) => item.trim())
+      .filter(Boolean)
+      .slice(0, max);
+  }
+  return [];
+}
+
+export function AnalysisResult({
+  analysis,
+  targetRole,
+  onBack,
+  onOpenActionPlan,
+}) {
   if (!analysis) return null;
 
   const overallScore = Math.round(toHundredScale(analysis.overallScore));
@@ -86,7 +92,7 @@ export function AnalysisResult({ analysis, targetRole, onBack }) {
   const role = targetRole || "Not specified";
   const refId = analysis.referenceId || analysis.id || "ANALYSIS-REPORT";
   const lastScan = formatDateLike(
-    analysis.lastScanAt || analysis.updatedAt || analysis.createdAt
+    analysis.lastScanAt || analysis.updatedAt || analysis.createdAt,
   );
 
   const strengths = (analysis.strengths || []).slice(0, 2);
@@ -96,7 +102,6 @@ export function AnalysisResult({ analysis, targetRole, onBack }) {
   return (
     <div className="h-full w-full bg-background">
       <div className="w-full mt-12 p-4 sm:p-6 lg:p-10 space-y-6">
-        
         {/* Header */}
         <MotionDiv
           {...fadeUp(0)}
@@ -133,21 +138,25 @@ export function AnalysisResult({ analysis, targetRole, onBack }) {
           </div>
 
           <div className="text-right">
-            <span className="block text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Conducted
-            </span>
-            <span className="text-sm font-semibold text-foreground">
-              {lastScan}
-            </span>
+            <div className="mt-3 flex justify-end gap-2">
+              <Button
+                type="button"
+                size="lg"
+                className="relative overflow-hidden border-emerald-400/40 bg-emerald-500 text-emerald-950  transition hover:bg-emerald-400 mr-5 "
+                onClick={onOpenActionPlan}
+              >
+                <span className="absolute inset-0 animate-pulse bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                <Download size={14} />
+                <span className="relative z-[1]">Action Plan</span>
+              </Button>
+            </div>
           </div>
         </MotionDiv>
 
         {/* Grid Layout */}
         <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
-
           {/* LEFT */}
           <MotionDiv {...fadeUp(0.05)} className="xl:col-span-3 space-y-5">
-
             {/* Overall */}
             <section className="rounded-xl border border-white/10 bg-white/[0.03] p-6">
               <h3 className="text-lg font-semibold text-foreground">
@@ -183,13 +192,11 @@ export function AnalysisResult({ analysis, targetRole, onBack }) {
                 {analysis.atsFeedback || getScoreLabel(atsScore)}
               </p>
             </section>
-
           </MotionDiv>
 
           {/* CENTER */}
           <MotionDiv {...fadeUp(0.1)} className="xl:col-span-6">
             <section className="rounded-xl border border-white/10 bg-white/[0.03]">
-
               <div className="px-6 py-4 border-b border-white/10">
                 <h2 className="text-lg font-semibold text-foreground">
                   Section Analysis
@@ -199,6 +206,8 @@ export function AnalysisResult({ analysis, targetRole, onBack }) {
               {sections.map(([key, section], i) => {
                 const score = toHundredScale(section?.score);
                 const insights = toInsightPoints(section?.feedback);
+                const whatToAdd = toArray(section?.whatToAdd, 3);
+                const improvements = toArray(section?.improvements, 3);
 
                 return (
                   <MotionDiv
@@ -243,6 +252,46 @@ export function AnalysisResult({ analysis, targetRole, onBack }) {
                         </li>
                       ))}
                     </ul>
+
+                    {(whatToAdd.length > 0 || improvements.length > 0) && (
+                      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                        {whatToAdd.length > 0 && (
+                          <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
+                            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">
+                              What To Add
+                            </p>
+                            <ul className="mt-2 space-y-1">
+                              {whatToAdd.map((item, idx) => (
+                                <li
+                                  key={`${key}-add-${idx}`}
+                                  className="text-sm text-muted-foreground leading-relaxed"
+                                >
+                                  + {item}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {improvements.length > 0 && (
+                          <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-3">
+                            <p className="text-xs font-semibold uppercase tracking-wide text-blue-300">
+                              Improvement Steps
+                            </p>
+                            <ul className="mt-2 space-y-1">
+                              {improvements.map((item, idx) => (
+                                <li
+                                  key={`${key}-improve-${idx}`}
+                                  className="text-sm text-muted-foreground leading-relaxed"
+                                >
+                                  → {item}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </MotionDiv>
                 );
               })}
@@ -251,7 +300,6 @@ export function AnalysisResult({ analysis, targetRole, onBack }) {
 
           {/* RIGHT */}
           <MotionDiv {...fadeUp(0.14)} className="xl:col-span-3 space-y-5">
-
             {/* Strengths */}
             <section>
               <h2 className="text-sm font-semibold text-muted-foreground">
@@ -264,7 +312,11 @@ export function AnalysisResult({ analysis, targetRole, onBack }) {
                     key={idx}
                     className="flex gap-3 p-4 rounded-xl border border-white/10 bg-white/[0.03]"
                   >
-                    {idx === 0 ? <CheckCircle2 size={16} /> : <TrendingUp size={16} />}
+                    {idx === 0 ? (
+                      <CheckCircle2 size={16} />
+                    ) : (
+                      <TrendingUp size={16} />
+                    )}
                     <p className="text-sm leading-relaxed">{item}</p>
                   </div>
                 ))}
@@ -278,7 +330,6 @@ export function AnalysisResult({ analysis, targetRole, onBack }) {
               </h2>
 
               <div className="mt-4 space-y-4">
-
                 <div>
                   <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                     Found
@@ -310,10 +361,8 @@ export function AnalysisResult({ analysis, targetRole, onBack }) {
                     ))}
                   </div>
                 </div>
-
               </div>
             </section>
-
           </MotionDiv>
         </div>
       </div>

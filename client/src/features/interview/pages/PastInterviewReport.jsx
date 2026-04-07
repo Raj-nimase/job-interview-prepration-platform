@@ -7,13 +7,14 @@ import { SummaryOverallScoreCard } from "../components/SummaryOverallScoreCard";
 import { SummaryQuestionBreakdown } from "../components/SummaryQuestionBreakdown";
 import { SummaryInsightsAside } from "../components/SummaryInsightsAside";
 import { averageScoreFromHistory } from "../services/interviewFeedback.helpers";
-import { getSession } from "../services/interview.api";
+import { getInterviewSummary, getSession } from "../services/interview.api";
 
 export default function PastInterviewReport() {
   const { id } = useParams();
   const nav = useNavigate();
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isLoadingReport, setIsLoadingReport] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -23,6 +24,32 @@ export default function PastInterviewReport() {
         .finally(() => setLoading(false));
     }
   }, [id]);
+
+  useEffect(() => {
+    if (!id || !session) return;
+    const hasSummary =
+      !!session.summary?.nextLevelEdge || !!session.summary?.refinementAreas;
+    const hasAnswers = (session.questionsAsked?.length || 0) > 0;
+    if (hasSummary || !hasAnswers) return;
+
+    let mounted = true;
+    setIsLoadingReport(true);
+    getInterviewSummary(id)
+      .then((data) => {
+        if (!mounted) return;
+        if (data?.summary) {
+          setSession((prev) => (prev ? { ...prev, summary: data.summary } : prev));
+        }
+      })
+      .catch((err) => console.error("Past report summary fetch error:", err))
+      .finally(() => {
+        if (mounted) setIsLoadingReport(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [id, session]);
 
   if (loading) {
     return (
@@ -78,14 +105,20 @@ export default function PastInterviewReport() {
         </header>
 
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 xl:gap-12">
-          <SummaryQuestionBreakdown history={history} />
+          {history.length > 0 ? (
+            <SummaryQuestionBreakdown history={history} />
+          ) : (
+            <section className="xl:col-span-8 rounded-3xl border border-border bg-card p-8 text-center text-muted-foreground">
+              This session has no recorded questions/answers. It may have been
+              started but ended before submitting any response.
+            </section>
+          )}
           <SummaryInsightsAside
             role={session.role}
             averageScore={averageScore}
             questionCount={history.length}
-            history={history}
             report={report}
-            isLoadingReport={false}
+            isLoadingReport={isLoadingReport}
             onNewInterview={() => nav("/selectRole")}
           />
         </div>

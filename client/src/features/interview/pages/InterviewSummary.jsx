@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -9,15 +9,41 @@ import { SummaryQuestionBreakdown } from "../components/SummaryQuestionBreakdown
 import { SummaryInsightsAside } from "../components/SummaryInsightsAside";
 import { averageScoreFromHistory } from "../services/interviewFeedback.helpers";
 import { MAX_QUESTIONS } from "../constants/interview.constants";
+import { getInterviewSummary } from "../services/interview.api";
 
 export function InterviewSummary() {
   const nav = useNavigate();
   const { history, role, setHistory, setStarted } = useInterview();
+  const [report, setReport] = useState(null);
+  const [isLoadingReport, setIsLoadingReport] = useState(false);
 
   // Mark session inactive once summary is shown (avoids /interview redirect race on End).
   useEffect(() => {
     setStarted(false);
   }, [setStarted]);
+
+  useEffect(() => {
+    const sessionId = localStorage.getItem("sessionId");
+    if (!sessionId) return;
+
+    let mounted = true;
+    setIsLoadingReport(true);
+    getInterviewSummary(sessionId)
+      .then((data) => {
+        if (!mounted) return;
+        setReport(data?.summary || null);
+      })
+      .catch((err) => {
+        console.error("Summary fetch error:", err);
+      })
+      .finally(() => {
+        if (mounted) setIsLoadingReport(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleNewInterview = () => {
     localStorage.removeItem("sessionId");
@@ -46,8 +72,8 @@ export function InterviewSummary() {
             No answers recorded
           </h1>
           <p className="text-muted-foreground">
-            This session ended before any answer was saved. Start a new interview
-            to practice.
+            This session ended before any answer was saved. Start a new
+            interview to practice.
           </p>
           <Button
             onClick={handleNewInterview}
@@ -95,12 +121,12 @@ export function InterviewSummary() {
             role={role}
             averageScore={averageScore}
             questionCount={history.length}
-            history={history}
+            report={report}
+            isLoadingReport={isLoadingReport}
             onNewInterview={handleNewInterview}
           />
         </div>
       </main>
-
     </div>
   );
 }

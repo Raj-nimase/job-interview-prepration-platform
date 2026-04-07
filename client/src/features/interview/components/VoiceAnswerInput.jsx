@@ -97,7 +97,11 @@ export function VoiceAnswerInput({
             value={isTranscribing ? "" : userAnswer}
             onChange={(e) => onAnswerChange(e.target.value)}
             rows={4}
-            placeholder={isTranscribing ? "Transcribing your answer..." : "Your transcribed answer will appear here..."}
+            placeholder={
+              isTranscribing
+                ? "Transcribing your answer..."
+                : "Your transcribed answer will appear here..."
+            }
             className="bg-background border-border text-foreground text-base resize-none"
             disabled={isTranscribing || !!feedback || isLoadingFeedback}
           />

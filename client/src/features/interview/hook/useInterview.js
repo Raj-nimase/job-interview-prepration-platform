@@ -92,6 +92,7 @@ export function useInterview() {
         try {
           const feedbackData = await getFeedbackAPI(
             userId,
+            localStorage.getItem("sessionId"),
             ctx.role,
             ctx.experience,
             ctx.question,
@@ -200,6 +201,7 @@ export function useInterview() {
     try {
       const data = await getFeedbackAPI(
         userId,
+        localStorage.getItem("sessionId"),
         ctx.role,
         ctx.experience,
         ctx.question,

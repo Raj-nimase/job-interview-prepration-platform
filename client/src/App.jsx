@@ -26,6 +26,7 @@ import { AuthProvider } from "./features/auth/context/auth.context";
 import { InterviewProvider } from "./features/interview/context/interview.context";
 import { ResumeAnalyzerProvider } from "./features/resume-analyzer/context/resume-analyzer.context";
 import { ResumeAnalyzer } from "./features/resume-analyzer/pages/ResumeAnalyzer";
+import { ActionPlanPage } from "./features/resume-analyzer/pages/ActionPlanPage";
 
 // Layout wrapper to share InterviewProvider across all interview routes
 function InterviewLayout() {
@@ -57,6 +58,14 @@ function App() {
             element={
               <ResumeAnalyzerProvider>
                 <ResumeAnalyzer />
+              </ResumeAnalyzerProvider>
+            }
+          />
+          <Route
+            path="/resume-analyzer/action-plan"
+            element={
+              <ResumeAnalyzerProvider>
+                <ActionPlanPage />
               </ResumeAnalyzerProvider>
             }
           />
