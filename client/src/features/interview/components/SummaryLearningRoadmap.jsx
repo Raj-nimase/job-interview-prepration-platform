@@ -22,9 +22,18 @@ function takeTop(items, limit = 3) {
 function buildRoadmap({ role, history, report, averageScore }) {
   const parts = history.map((turn) => getFeedbackParts(turn.feedback));
 
-  const strengths = takeTop(parts.flatMap((p) => p.strengths || []), 4);
-  const weaknesses = takeTop(parts.flatMap((p) => p.weaknesses || []), 4);
-  const suggestions = takeTop(parts.flatMap((p) => p.suggestions || []), 6);
+  const strengths = takeTop(
+    parts.flatMap((p) => p.strengths || []),
+    4,
+  );
+  const weaknesses = takeTop(
+    parts.flatMap((p) => p.weaknesses || []),
+    4,
+  );
+  const suggestions = takeTop(
+    parts.flatMap((p) => p.suggestions || []),
+    6,
+  );
 
   const nextLevel = String(report?.nextLevelEdge || "").trim();
   const refinements = String(report?.refinementAreas || "").trim();
@@ -94,7 +103,12 @@ function addParagraph(doc, text, x, y, maxWidth, lineHeight = 16) {
   return y + lines.length * lineHeight;
 }
 
-export function SummaryLearningRoadmap({ role, history, report, averageScore }) {
+export function SummaryLearningRoadmap({
+  role,
+  history,
+  report,
+  averageScore,
+}) {
   const roadmap = useMemo(
     () => buildRoadmap({ role, history, report, averageScore }),
     [role, history, report, averageScore],
@@ -124,7 +138,14 @@ export function SummaryLearningRoadmap({ role, history, report, averageScore }) 
     doc.setFontSize(11);
     y = addParagraph(doc, roadmap.scoreLine, margin, y, contentWidth, 15);
     y += 4;
-    y = addParagraph(doc, `Executive summary: ${roadmap.summary}`, margin, y, contentWidth, 15);
+    y = addParagraph(
+      doc,
+      `Executive summary: ${roadmap.summary}`,
+      margin,
+      y,
+      contentWidth,
+      15,
+    );
     y += 4;
     y = addParagraph(
       doc,
@@ -181,7 +202,9 @@ export function SummaryLearningRoadmap({ role, history, report, averageScore }) 
       y += 14;
     });
 
-    const safeRole = String(role || "interview").replace(/[^a-z0-9]+/gi, "-").toLowerCase();
+    const safeRole = String(role || "interview")
+      .replace(/[^a-z0-9]+/gi, "-")
+      .toLowerCase();
     doc.save(`${safeRole}-learning-roadmap.pdf`);
   };
 
@@ -191,13 +214,16 @@ export function SummaryLearningRoadmap({ role, history, report, averageScore }) 
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-emerald-600">
             <MapIcon className="w-5 h-5" />
-            <h3 className="text-xs font-extrabold uppercase tracking-widest">Learning roadmap</h3>
+            <h3 className="text-xs font-extrabold uppercase tracking-widest">
+              Learning roadmap
+            </h3>
           </div>
           <h2 className="text-xl md:text-2xl font-bold text-foreground font-headline">
             What to learn next
           </h2>
           <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
-            Personalized from your per-question executive feedback, strengths, weaknesses, suggestions, and final summary.
+            Personalized from your per-question executive feedback, strengths,
+            weaknesses, suggestions, and final summary.
           </p>
         </div>
 
@@ -213,10 +239,15 @@ export function SummaryLearningRoadmap({ role, history, report, averageScore }) 
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6">
         {roadmap.phases.map((phase) => (
-          <article key={phase.title} className="rounded-2xl border border-border bg-muted/20 p-5">
+          <article
+            key={phase.title}
+            className="rounded-2xl border border-border bg-muted/20 p-5"
+          >
             <div className="flex items-center gap-2 mb-2 text-emerald-600">
               <Target className="w-4 h-4" />
-              <h4 className="text-sm font-bold text-foreground">{phase.title}</h4>
+              <h4 className="text-sm font-bold text-foreground">
+                {phase.title}
+              </h4>
             </div>
             <p className="text-sm text-muted-foreground mb-3">{phase.goal}</p>
 
@@ -226,7 +257,10 @@ export function SummaryLearningRoadmap({ role, history, report, averageScore }) 
                   Learn
                 </p>
                 {phase.learn.filter(Boolean).map((item, idx) => (
-                  <p key={`${phase.title}-learn-${idx}`} className="text-sm text-foreground">
+                  <p
+                    key={`${phase.title}-learn-${idx}`}
+                    className="text-sm text-foreground"
+                  >
                     - {item}
                   </p>
                 ))}
@@ -236,8 +270,14 @@ export function SummaryLearningRoadmap({ role, history, report, averageScore }) 
                 <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold mb-1">
                   Practice
                 </p>
-                {(phase.tasks.filter(Boolean).length ? phase.tasks : ["Run a mock interview and review answer quality."]).map((item, idx) => (
-                  <p key={`${phase.title}-task-${idx}`} className="text-sm text-foreground">
+                {(phase.tasks.filter(Boolean).length
+                  ? phase.tasks
+                  : ["Run a mock interview and review answer quality."]
+                ).map((item, idx) => (
+                  <p
+                    key={`${phase.title}-task-${idx}`}
+                    className="text-sm text-foreground"
+                  >
                     - {item}
                   </p>
                 ))}

@@ -1,4 +1,10 @@
-import { TrendingUp, AlertTriangle, Lightbulb, CheckCircle, AlertCircle } from "lucide-react";
+import {
+  TrendingUp,
+  AlertTriangle,
+  Lightbulb,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
 import { getFeedbackParts } from "../services/interviewFeedback.helpers";
 
 const TAGS = ["Core competency", "Depth", "Communication", "Leadership"];
@@ -66,7 +72,9 @@ export function SummaryQuestionBreakdown({ history }) {
               <div className="bg-blue-500/5 border border-blue-500/20 rounded-2xl p-5 mb-6">
                 <div className="flex items-center gap-2 text-blue-600 mb-3">
                   <AlertTriangle className="w-4 h-4" />
-                  <h4 className="text-xs font-bold uppercase tracking-widest">Executive Feedback</h4>
+                  <h4 className="text-xs font-bold uppercase tracking-widest">
+                    Executive Feedback
+                  </h4>
                 </div>
                 <div
                   className="text-foreground text-sm md:text-base leading-relaxed prose prose-sm dark:prose-invert max-w-none"
@@ -107,18 +115,24 @@ export function SummaryQuestionBreakdown({ history }) {
               </div>
             )}
 
-            {(parts.strengths?.length > 0 || parts.weaknesses?.length > 0 || parts.suggestions?.length > 0) && (
+            {(parts.strengths?.length > 0 ||
+              parts.weaknesses?.length > 0 ||
+              parts.suggestions?.length > 0) && (
               <div className="space-y-4 mt-6 pt-5 border-t border-border">
                 {parts.strengths?.length > 0 && (
                   <div className="rounded-2xl border border-green-500/20 bg-green-500/5 p-5">
                     <div className="flex items-center gap-2 text-green-600 mb-3">
                       <CheckCircle className="w-4 h-4" />
-                      <h4 className="text-xs font-bold uppercase tracking-widest">Strengths</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-widest">
+                        Strengths
+                      </h4>
                     </div>
                     <ul className="text-sm text-foreground leading-relaxed space-y-2">
                       {parts.strengths.map((strength, i) => (
                         <li key={i} className="flex items-start gap-2">
-                          <span className="text-green-600 font-bold mt-0.5">•</span>
+                          <span className="text-green-600 font-bold mt-0.5">
+                            •
+                          </span>
                           <span>{strength}</span>
                         </li>
                       ))}
@@ -130,12 +144,16 @@ export function SummaryQuestionBreakdown({ history }) {
                   <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-5">
                     <div className="flex items-center gap-2 text-red-600 mb-3">
                       <AlertCircle className="w-4 h-4" />
-                      <h4 className="text-xs font-bold uppercase tracking-widest">Weaknesses</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-widest">
+                        Weaknesses
+                      </h4>
                     </div>
                     <ul className="text-sm text-foreground leading-relaxed space-y-2">
                       {parts.weaknesses.map((weakness, i) => (
                         <li key={i} className="flex items-start gap-2">
-                          <span className="text-red-600 font-bold mt-0.5">•</span>
+                          <span className="text-red-600 font-bold mt-0.5">
+                            •
+                          </span>
                           <span>{weakness}</span>
                         </li>
                       ))}
@@ -147,12 +165,16 @@ export function SummaryQuestionBreakdown({ history }) {
                   <div className="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-5">
                     <div className="flex items-center gap-2 text-blue-600 mb-3">
                       <Lightbulb className="w-4 h-4" />
-                      <h4 className="text-xs font-bold uppercase tracking-widest">Suggestions for Improvement</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-widest">
+                        Suggestions for Improvement
+                      </h4>
                     </div>
                     <ul className="text-sm text-foreground leading-relaxed space-y-2">
                       {parts.suggestions.map((suggestion, i) => (
                         <li key={i} className="flex items-start gap-2">
-                          <span className="text-blue-600 font-bold mt-0.5">•</span>
+                          <span className="text-blue-600 font-bold mt-0.5">
+                            •
+                          </span>
                           <span>{suggestion}</span>
                         </li>
                       ))}

@@ -39,7 +39,9 @@ export default function PastInterviewReport() {
       .then((data) => {
         if (!mounted) return;
         if (data?.summary) {
-          setSession((prev) => (prev ? { ...prev, summary: data.summary } : prev));
+          setSession((prev) =>
+            prev ? { ...prev, summary: data.summary } : prev,
+          );
         }
       })
       .catch((err) => console.error("Past report summary fetch error:", err))
