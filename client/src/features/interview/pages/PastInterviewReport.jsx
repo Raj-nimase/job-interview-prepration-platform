@@ -4,6 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft } from "lucide-react";
 import { SummaryReportHeader } from "../components/SummaryReportHeader";
 import { SummaryOverallScoreCard } from "../components/SummaryOverallScoreCard";
+import { SummaryLearningRoadmap } from "../components/SummaryLearningRoadmap";
 import { SummaryQuestionBreakdown } from "../components/SummaryQuestionBreakdown";
 import { SummaryInsightsAside } from "../components/SummaryInsightsAside";
 import { averageScoreFromHistory } from "../services/interviewFeedback.helpers";
@@ -103,6 +104,15 @@ export default function PastInterviewReport() {
             questionCount={history.length}
           />
         </header>
+
+        {history.length > 0 && (
+          <SummaryLearningRoadmap
+            role={session.role}
+            history={history}
+            report={report}
+            averageScore={averageScore}
+          />
+        )}
 
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 xl:gap-12">
           {history.length > 0 ? (

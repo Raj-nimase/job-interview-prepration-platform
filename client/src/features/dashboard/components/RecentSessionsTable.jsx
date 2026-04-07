@@ -48,7 +48,7 @@ export function RecentSessionsTable({ sessions }) {
               </div>
             </div>
 
-            {session.summary ? (
+            {/* {session.summary ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-border/60">
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-emerald-500 mb-1">
@@ -77,7 +77,7 @@ export function RecentSessionsTable({ sessions }) {
               <div className="mt-4 pt-4 border-t border-border/60 text-sm text-muted-foreground italic">
                 No advanced feedback generated for this session.
               </div>
-            )}
+            )} */}
           </div>
         ))}
       </div>
