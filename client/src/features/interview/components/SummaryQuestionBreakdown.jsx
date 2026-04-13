@@ -4,6 +4,8 @@ import {
   Lightbulb,
   CheckCircle,
   AlertCircle,
+  Volume2,
+  BarChart2,
 } from "lucide-react";
 import { getFeedbackParts } from "../services/interviewFeedback.helpers";
 
@@ -23,6 +25,9 @@ export function SummaryQuestionBreakdown({ history }) {
 
       {history.map((turn, index) => {
         const parts = getFeedbackParts(turn.feedback);
+        const rawFeedback = typeof turn.feedback === 'object' ? turn.feedback : {};
+        const delivery = rawFeedback.delivery;
+        const starScores = rawFeedback.starScores;
         const tag = TAGS[index % TAGS.length];
         const isFirst = index === 0;
 
@@ -38,35 +43,88 @@ export function SummaryQuestionBreakdown({ history }) {
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-5">
               <div>
                 <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest bg-emerald-500/15 px-2 py-0.5 rounded">
-                  {tag}
+                  {turn.questionType || tag}
                 </span>
                 <h3 className="text-xl md:text-2xl font-bold mt-2 text-foreground font-headline">
                   Question {index + 1}
                 </h3>
               </div>
-              {parts.score != null && (
-                <div className="bg-card px-4 py-3 rounded-2xl shadow-sm border border-border shrink-0">
-                  <span className="text-lg font-bold text-emerald-600 tracking-tight">
-                    {parts.score}
-                  </span>
-                  <span className="text-xs text-muted-foreground font-medium">
-                    {" "}
-                    / 10
-                  </span>
-                </div>
-              )}
+              <div className="flex gap-2">
+                {parts.score != null && (
+                  <div className="bg-card px-4 py-3 rounded-2xl shadow-sm border border-border shrink-0 flex flex-col items-center">
+                    <span className="text-xs font-bold text-muted-foreground uppercase mb-1">Content</span>
+                    <div>
+                      <span className="text-lg font-bold text-emerald-600 tracking-tight">{parts.score}</span>
+                      <span className="text-xs text-muted-foreground font-medium"> / 10</span>
+                    </div>
+                  </div>
+                )}
+                {delivery?.overallDeliveryScore != null && (
+                  <div className="bg-card px-4 py-3 rounded-2xl shadow-sm border border-border shrink-0 flex flex-col items-center">
+                    <span className="text-xs font-bold text-muted-foreground uppercase mb-1">Delivery</span>
+                    <div>
+                      <span className="text-lg font-bold text-blue-600 tracking-tight">{delivery.overallDeliveryScore}</span>
+                      <span className="text-xs text-muted-foreground font-medium"> / 10</span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
-            <p className="text-muted-foreground text-base italic mb-4 font-medium leading-relaxed">
-              &ldquo;{turn.question}&rdquo;
-            </p>
+            <div className="space-y-4 mb-6">
+              <p className="text-muted-foreground text-base italic font-medium leading-relaxed">
+                &ldquo;{turn.question}&rdquo;
+              </p>
 
-            <p className="text-foreground text-sm md:text-base leading-relaxed mb-4">
-              <span className="font-semibold text-muted-foreground">
-                Your answer:{" "}
-              </span>
-              {turn.answer}
-            </p>
+              <div className="bg-card rounded-xl border border-border/60 p-4">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest block mb-2">
+                  Your answer
+                </span>
+                <p className="text-foreground text-sm md:text-base leading-relaxed">
+                  {turn.answer || "—"}
+                </p>
+                {turn.followUpQuestion && (
+                  <div className="mt-4 pt-4 border-t border-border/60">
+                    <span className="text-xs font-bold text-amber-600 uppercase tracking-widest block mb-1">
+                      Follow-up
+                    </span>
+                    <p className="text-sm text-muted-foreground italic mb-2">&ldquo;{turn.followUpQuestion}&rdquo;</p>
+                    <p className="text-foreground text-sm leading-relaxed">{turn.followUpAnswer || "—"}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* STAR Breakdown */}
+            {starScores && (
+              <div className="mb-6 bg-muted/30 rounded-xl border border-border p-5">
+                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <BarChart2 className="w-4 h-4" /> STAR Framework Analysis
+                </h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {["situation", "task", "action", "result"].map((k) => {
+                    const s = starScores[k] || 0;
+                    const c = s >= 7 ? "text-emerald-500" : s >= 4 ? "text-amber-500" : "text-red-500";
+                    return (
+                      <div key={k} className="bg-card rounded-lg p-3 border border-border/50 text-center">
+                        <span className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">{k}</span>
+                        <span className={`text-lg font-black ${c}`}>{s}<span className="text-xs opacity-50">/10</span></span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Delivery Stats */}
+            {delivery && delivery.fillerWordCount > 0 && (
+              <div className="mb-6 flex items-center gap-3 bg-muted/30 rounded-xl border border-border p-4 text-sm">
+                <Volume2 className="w-4 h-4 text-amber-600" />
+                <span className="text-muted-foreground">
+                  Detected <strong className="text-foreground">{delivery.fillerWordCount}</strong> filler words ({delivery.fillerWordRate}% of response).
+                </span>
+              </div>
+            )}
 
             {parts.text && (
               <div className="bg-blue-500/5 border border-blue-500/20 rounded-2xl p-5 mb-6">

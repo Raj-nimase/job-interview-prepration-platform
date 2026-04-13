@@ -1,8 +1,8 @@
-import { MAX_QUESTIONS } from "../constants/interview.constants";
+import PerformancePulse from "./PerformancePulse";
 
-export function WorkspaceSessionHeader({ answeredCount, role }) {
-  const n = Math.min(answeredCount + 1, MAX_QUESTIONS);
-  const pct = (n / MAX_QUESTIONS) * 100;
+export function WorkspaceSessionHeader({ answeredCount, role, questionCount, history, performanceStatus }) {
+  const n = Math.min(answeredCount + 1, questionCount || 1);
+  const pct = (n / (questionCount || 1)) * 100;
 
   return (
     <div className="mb-6 md:mb-8">
@@ -20,11 +20,12 @@ export function WorkspaceSessionHeader({ answeredCount, role }) {
             </p>
           )}
         </div>
-        <div className="text-left sm:text-right">
-          <span className="font-headline font-bold text-muted-foreground text-sm block mb-2">
-            Question {n} of {MAX_QUESTIONS}
-          </span>
-          <div className="w-full sm:w-48 h-2 bg-muted rounded-full overflow-hidden">
+        <div className="text-left sm:text-right flex flex-col items-start sm:items-end">
+          <div className="font-headline font-bold text-muted-foreground text-sm flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto mb-2">
+            <span>Question {n} of {questionCount}</span>
+            <PerformancePulse history={history} performanceStatus={performanceStatus} />
+          </div>
+          <div className="w-full sm:w-48 h-2 bg-muted rounded-full overflow-hidden shrink-0">
             <div
               className="h-full rounded-full bg-gradient-to-r from-emerald-700 to-emerald-500 transition-[width] duration-300"
               style={{ width: `${pct}%` }}

@@ -40,7 +40,7 @@ export const SETUP_EXPERIENCE_LEVELS = [
 export const SETUP_SESSION_BULLETS = [
   {
     icon: "verified_user",
-    text: "Structured feedback after each of your five answers.",
+    text: "Structured feedback after each answer with dynamic session length.",
   },
   {
     icon: "timer",

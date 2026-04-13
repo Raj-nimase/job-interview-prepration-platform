@@ -10,6 +10,7 @@ export function useDashboardRecords() {
   const [interviewStats, setInterviewStats] = useState(null);
   const [quizStats, setQuizStats] = useState(null);
   const [resumeHistory, setResumeHistory] = useState([]);
+  const [competencyProfile, setCompetencyProfile] = useState({});
 
   const [loading, setLoading] = useState(true);
 
@@ -21,6 +22,7 @@ export function useDashboardRecords() {
         setInterviewStats(data.interviewStats);
         setQuizStats(data.quizStats);
         setResumeHistory(data.resumeHistory);
+        setCompetencyProfile(data.competencyProfile || {});
       } catch (error) {
         console.error("[Dashboard] Error initializing:", error?.response?.data || error?.message);
         navigate("/login");
@@ -38,6 +40,6 @@ export function useDashboardRecords() {
     interviewStats,
     quizStats,
     resumeHistory,
+    competencyProfile,
   };
 }
-

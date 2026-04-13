@@ -56,6 +56,15 @@ export function SummaryInsightsAside({
               </div>
             ) : report ? (
               <div className="space-y-6">
+                {report.sessionVerdict && (
+                  <div className="space-y-2 pb-4 border-b border-border/40">
+                    <span className="text-xs font-bold uppercase tracking-wider text-emerald-700">Overall Verdict</span>
+                    <p className="text-sm font-semibold text-foreground leading-relaxed">
+                      {report.sessionVerdict}
+                    </p>
+                  </div>
+                )}
+                
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-emerald-600">
                     <TrendingUp className="w-4 h-4" />
@@ -75,6 +84,18 @@ export function SummaryInsightsAside({
                     {report.refinementAreas || "Review the feedback on your questions to find areas for improvement."}
                   </p>
                 </div>
+
+                {report.recoveryPlan && (
+                  <div className="space-y-2 pt-4 border-t border-border/40">
+                    <div className="flex items-center gap-2 text-blue-500">
+                      <Brain className="w-4 h-4" />
+                      <span className="text-xs font-bold uppercase tracking-wider">Recovery Plan</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {report.recoveryPlan}
+                    </p>
+                  </div>
+                )}
               </div>
             ) : (
               <p className="text-sm text-muted-foreground italic">
