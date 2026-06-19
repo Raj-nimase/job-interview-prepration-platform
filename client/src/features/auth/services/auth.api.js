@@ -1,7 +1,8 @@
 import axios from "axios";
 
 // base URL can be configured via environment variables
-const API_BASE_URL = "http://localhost:4000/api";
+const API_BASE_URL =
+  "https://job-interview-prepration-platform-production.up.railway.app/api";
 
 // create an axios instance scoped to the auth API
 const authClient = axios.create({

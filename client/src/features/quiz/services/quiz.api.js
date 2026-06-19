@@ -1,12 +1,16 @@
 import axios from "axios";
 
-const API_BASE = "http://localhost:4000";
+const API_BASE =
+  "https://job-interview-prepration-platform-production.up.railway.app";
 
 export async function fetchQuizQuestions(topic, level = 1) {
   if (!topic) throw new Error("Missing topic");
-  const res = await axios.get(`${API_BASE}/api/quiz/questions/${topic}/${level}`, {
-    withCredentials: true,
-  });
+  const res = await axios.get(
+    `${API_BASE}/api/quiz/questions/${topic}/${level}`,
+    {
+      withCredentials: true,
+    },
+  );
   return res.data;
 }
 
@@ -18,7 +22,7 @@ export async function submitQuizAttempt({ userId, topic, level, answers }) {
   const res = await axios.post(
     `${API_BASE}/api/quiz/submit`,
     { userId, topic, level, answers },
-    { withCredentials: true }
+    { withCredentials: true },
   );
   return res.data;
 }
@@ -27,8 +31,11 @@ export async function fetchUserProgress(userId, topic) {
   if (!userId) throw new Error("Missing userId");
   if (!topic) throw new Error("Missing topic");
 
-  const res = await axios.get(`${API_BASE}/api/quiz/progress/${userId}/${topic}`, {
-    withCredentials: true,
-  });
+  const res = await axios.get(
+    `${API_BASE}/api/quiz/progress/${userId}/${topic}`,
+    {
+      withCredentials: true,
+    },
+  );
   return res.data;
 }

@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_BASE = "http://localhost:4000";
+const API_BASE =
+  "https://job-interview-prepration-platform-production.up.railway.app";
 
 /**
  * Upload and analyze a resume PDF.
