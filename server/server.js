@@ -16,10 +16,33 @@ import cookiparser from "cookie-parser";
 dotenv.config();
 const app = express();
 app.use(cookiparser());
-// enable cross‑origin requests and allow cookies to be sent
+const allowedOrigins = new Set(
+  [
+    process.env.CLIENT_ORIGIN,
+    ...(process.env.CLIENT_ORIGINS
+      ? process.env.CLIENT_ORIGINS.split(",")
+      : []),
+    "http://localhost:5173",
+    "https://job-interview-prepration-platform-3f621l3d0.vercel.app",
+  ].filter(Boolean),
+);
+
+function isAllowedOrigin(origin) {
+  return (
+    allowedOrigins.has(origin) || /^https:\/\/.*\.vercel\.app$/.test(origin)
+  );
+}
+
+// enable cross-origin requests and allow cookies to be sent
 app.use(
   cors({
-    origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
+    origin(origin, callback) {
+      if (!origin || isAllowedOrigin(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
     credentials: true,
   }),
 );
